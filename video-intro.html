@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MIA DIY Assistant</title>
+    <script src="navigation-loader.js" defer data-router-preserve="navigation-router"></script>
     <style>
         * {
             margin: 0;
@@ -67,7 +68,7 @@
 </head>
 <body>
     <!-- MÚSICA GLOBAL -->
-    <script src="global-music.js"></script>
+    <script src="global-music.js" data-router-preserve="global-music"></script>
     
     <!-- BOTÓN MUTE -->
     <button class="mute-button" id="muteBtn" onclick="if(window.MIAMusic) window.MIAMusic.toggleMute()">

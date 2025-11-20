@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>MIA DIY Assistant - Conversación</title>
+<script src="navigation-loader.js" defer data-router-preserve="navigation-router"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{width:100%;height:100%;overflow:hidden;font-family:Arial,sans-serif;background:#000}
@@ -373,7 +374,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:Arial,sans-serif;ba
 <script src="api-config.js"></script>
 
 <!-- MÚSICA GLOBAL -->
-<script src="global-music.js"></script>
+<script src="global-music.js" data-router-preserve="global-music"></script>
 
 <!-- BOTÓN MUTE -->
 <button class="mute-button" id="muteBtn" onclick="if(window.MIAMusic) window.MIAMusic.toggleMute()">
