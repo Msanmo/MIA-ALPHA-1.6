@@ -1,0 +1,142 @@
+// 🎵 SERVICE WORKER PARA MÚSICA SIN GAP
+// Este service worker mantiene la música activa incluso al navegar entre páginas
+
+const CACHE_NAME = 'mia-music-v1';
+const MUSIC_URL = '/background-music.mp3';
+
+// Instalar service worker y cachear música
+self.addEventListener('install', (event) => {
+    console.log('🎵 Service Worker: Instalando...');
+    event.waitUntil(
+        caches.open(CACHE_NAME).then((cache) => {
+            console.log('🎵 Service Worker: Cacheando música');
+            return cache.add(MUSIC_URL);
+        })
+    );
+    self.skipWaiting();
+});
+
+// Activar service worker
+self.addEventListener('activate', (event) => {
+    console.log('🎵 Service Worker: Activado');
+    event.waitUntil(self.clients.claim());
+});
+
+// Interceptar requests de música
+self.addEventListener('fetch', (event) => {
+    if (event.request.url.includes('background-music.mp3')) {
+        event.respondWith(
+            caches.match(event.request).then((response) => {
+                return response || fetch(event.request);
+            })
+        );
+    }
+});
+
+// Mantener Web Audio Context activo entre páginas
+let audioContext = null;
+let audioBuffer = null;
+let sourceNode = null;
+let gainNode = null;
+let startTime = 0;
+let pauseTime = 0;
+
+// Mensaje desde las páginas
+self.addEventListener('message', async (event) => {
+    const { command, data } = event.data;
+    
+    switch (command) {
+        case 'INIT_AUDIO':
+            await initAudio();
+            break;
+            
+        case 'PLAY':
+            playAudio(data.currentTime);
+            break;
+            
+        case 'PAUSE':
+            pauseAudio();
+            break;
+            
+        case 'SET_VOLUME':
+            setVolume(data.volume);
+            break;
+            
+        case 'GET_TIME':
+            const currentTime = getCurrentTime();
+            event.ports[0].postMessage({ currentTime });
+            break;
+    }
+});
+
+async function initAudio() {
+    if (audioContext) return;
+    
+    console.log('🎵 Service Worker: Inicializando Web Audio API');
+    
+    // Crear AudioContext
+    audioContext = new AudioContext();
+    
+    // Crear GainNode para controlar volumen
+    gainNode = audioContext.createGain();
+    gainNode.gain.value = 0.3;
+    gainNode.connect(audioContext.destination);
+    
+    // Cargar audio desde cache
+    const cache = await caches.open(CACHE_NAME);
+    const response = await cache.match(MUSIC_URL);
+    const arrayBuffer = await response.arrayBuffer();
+    audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+    
+    console.log('🎵 Service Worker: Audio cargado, duración:', audioBuffer.duration, 's');
+}
+
+function playAudio(currentTime = 0) {
+    if (!audioContext || !audioBuffer) {
+        console.warn('⚠️ Service Worker: Audio no inicializado');
+        return;
+    }
+    
+    // Detener fuente anterior si existe
+    if (sourceNode) {
+        sourceNode.stop();
+    }
+    
+    // Crear nueva fuente
+    sourceNode = audioContext.createBufferSource();
+    sourceNode.buffer = audioBuffer;
+    sourceNode.loop = true;
+    sourceNode.connect(gainNode);
+    
+    // Calcular offset para loop perfecto
+    const offset = currentTime % audioBuffer.duration;
+    
+    // Iniciar reproducción
+    startTime = audioContext.currentTime - offset;
+    sourceNode.start(0, offset);
+    
+    console.log('🎵 Service Worker: Reproduciendo desde', offset.toFixed(2), 's');
+}
+
+function pauseAudio() {
+    if (sourceNode) {
+        pauseTime = getCurrentTime();
+        sourceNode.stop();
+        sourceNode = null;
+        console.log('🎵 Service Worker: Pausado en', pauseTime.toFixed(2), 's');
+    }
+}
+
+function setVolume(volume) {
+    if (gainNode) {
+        gainNode.gain.value = volume;
+        console.log('🎵 Service Worker: Volumen:', volume);
+    }
+}
+
+function getCurrentTime() {
+    if (!audioContext || !sourceNode) return pauseTime;
+    
+    const elapsed = audioContext.currentTime - startTime;
+    return elapsed % audioBuffer.duration;
+}

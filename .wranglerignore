@@ -1,0 +1,14 @@
+# Archivos innecesarios para deployment
+*.log
+*.md
+README*
+.git
+.github
+node_modules
+.vscode
+.idea
+*.backup
+*.tmp
+*.DS_Store
+core
+*.core

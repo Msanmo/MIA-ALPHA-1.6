@@ -1,0 +1,208 @@
+/* ========================================
+   TECLADO VIRTUAL TÁCTIL - ESTILOS
+   Optimizado para pantallas touch
+   ======================================== */
+
+.virtual-keyboard {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(30, 30, 30, 0.98);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 9999;
+    box-shadow: 0 -5px 30px rgba(0, 0, 0, 0.5);
+    border-top: 2px solid rgba(120, 190, 32, 0.3);
+}
+
+.keyboard-row {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+}
+
+.keyboard-key {
+    min-width: 70px;
+    min-height: 70px;
+    padding: 12px;
+    font-size: 24px;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%);
+    border: 2px solid rgba(120, 190, 32, 0.3);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+.keyboard-key:active {
+    transform: scale(0.95);
+    background: linear-gradient(135deg, #78be20 0%, #5a9015 100%);
+    border-color: #78be20;
+    box-shadow: 0 2px 5px rgba(120, 190, 32, 0.5);
+}
+
+.keyboard-key:hover {
+    background: linear-gradient(135deg, #4a4a4a 0%, #3a3a3a 100%);
+    border-color: rgba(120, 190, 32, 0.6);
+}
+
+/* Tecla Espacio */
+.key-space {
+    flex: 3;
+    min-width: 250px;
+    font-size: 18px;
+    min-height: 70px;
+}
+
+/* Tecla Backspace */
+.key-backspace {
+    flex: 1.5;
+    min-width: 100px;
+    min-height: 70px;
+    font-size: 28px;
+    background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
+    border-color: rgba(211, 47, 47, 0.5);
+}
+
+.key-backspace:active {
+    background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+    border-color: #f44336;
+}
+
+/* Tecla Enter */
+.key-enter {
+    flex: 1.5;
+    min-width: 100px;
+    min-height: 70px;
+    font-size: 28px;
+    background: linear-gradient(135deg, #78be20 0%, #5a9015 100%);
+    border-color: rgba(120, 190, 32, 0.5);
+}
+
+.key-enter:active {
+    background: linear-gradient(135deg, #8fcf30 0%, #78be20 100%);
+    border-color: #8fcf30;
+    box-shadow: 0 2px 15px rgba(120, 190, 32, 0.8);
+}
+
+/* Animación de entrada */
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.virtual-keyboard {
+    animation: slideUp 0.3s ease-out;
+}
+
+/* Responsive - Tablets */
+@media (max-width: 1024px) {
+    .keyboard-key {
+        min-width: 45px;
+        min-height: 50px;
+        font-size: 18px;
+    }
+    
+    .key-space {
+        min-width: 180px;
+    }
+    
+    .key-backspace,
+    .key-enter {
+        min-width: 70px;
+        font-size: 22px;
+    }
+}
+
+/* Responsive - Móviles */
+@media (max-width: 768px) {
+    .virtual-keyboard {
+        padding: 10px;
+        gap: 8px;
+    }
+    
+    .keyboard-row {
+        gap: 5px;
+    }
+    
+    .keyboard-key {
+        min-width: 35px;
+        min-height: 45px;
+        font-size: 16px;
+        padding: 8px;
+    }
+    
+    .key-space {
+        min-width: 150px;
+        font-size: 14px;
+    }
+    
+    .key-backspace,
+    .key-enter {
+        min-width: 60px;
+        font-size: 20px;
+    }
+}
+
+/* Responsive - Móviles pequeños */
+@media (max-width: 480px) {
+    .keyboard-key {
+        min-width: 28px;
+        min-height: 40px;
+        font-size: 14px;
+        padding: 6px;
+    }
+    
+    .key-space {
+        min-width: 120px;
+        font-size: 12px;
+    }
+    
+    .key-backspace,
+    .key-enter {
+        min-width: 50px;
+        font-size: 18px;
+    }
+}
+
+/* Estado deshabilitado */
+.keyboard-key:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #1a1a1a;
+}
+
+/* Feedback visual mejorado para touch */
+.keyboard-key::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(120, 190, 32, 0.5);
+    transform: translate(-50%, -50%);
+    transition: width 0.3s, height 0.3s;
+}
+
+.keyboard-key:active::before {
+    width: 100%;
+    height: 100%;
+}

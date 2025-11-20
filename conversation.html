@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>MIA DIY Assistant - Conversación</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;font-family:Arial,sans-serif;background:#000}
+
+/* VIDEO DE FONDO - MUY VISIBLE */
+.video-container{position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden;background:transparent}
+#bg-video{position:absolute;top:50%;left:50%;transform:translate(-50%, -50%);width:100%;height:100%;max-width:100vw;max-height:100vh;object-fit:contain;z-index:1;opacity:1;filter:brightness(1.2) contrast(1.1)}
+
+/* FALLBACK: Animación si video no carga */
+.video-container::before {
+    content: '🔧';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 8rem;
+    z-index: 0;
+    animation: float 3s ease-in-out infinite;
+    opacity: 0.3;
+}
+
+@keyframes float {
+    0%, 100% { transform: translate(-50%, -50%) translateY(0px); }
+    50% { transform: translate(-50%, -50%) translateY(-20px); }
+}
+
+/* CAPA PRINCIPAL */
+.layer{position:absolute;top:0;left:0;width:100%;height:100%;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px}
+
+/* BOTÓN DE SALIDA (X) - REINICIAR TODO */
+.exit-button{
+    position:fixed;
+    top:20px;
+    right:20px;
+    width:50px;
+    height:50px;
+    background:rgba(255,255,255,0.2);
+    backdrop-filter:blur(10px);
+    border:2px solid rgba(255,255,255,0.3);
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transition:all 0.3s;
+    z-index:50;
+}
+.exit-button:hover{
+    background:rgba(255,255,255,0.3);
+    transform:scale(1.1);
+}
+.exit-button::before,.exit-button::after{
+    content:'';
+    position:absolute;
+    width:20px;
+    height:2px;
+    background:#fff;
+}
+.exit-button::before{transform:rotate(45deg)}
+.exit-button::after{transform:rotate(-45deg)}
+
+/* BOTÓN DE VOLVER (←) - CONSERVA CONTEXTO */
+.back-button{
+    position:fixed;
+    top:20px;
+    left:20px;
+    width:50px;
+    height:50px;
+    background:rgba(255,255,255,0.2);
+    backdrop-filter:blur(10px);
+    border:2px solid rgba(255,255,255,0.3);
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transition:all 0.3s;
+    z-index:50;
+    font-size:24px;
+    color:#fff;
+    font-weight:bold;
+}
+.back-button:hover{
+    background:rgba(255,255,255,0.3);
+    transform:scale(1.1);
+}
+
+/* CONTENEDOR DE CAJAS */
+.chat-container{display:flex;gap:20px;width:100%;max-width:1400px;height:55%;align-items:stretch;position:relative;z-index:100;margin-top:80px}
+
+/* CAJA COMÚN - MUCHO MÁS TRANSPARENTE */
+.chat-box{flex:1;background:rgba(0,0,0,0.15);backdrop-filter:blur(8px);border-radius:20px;padding:25px;box-shadow:0 10px 40px rgba(0,0,0,0.2);display:flex;flex-direction:column;border:2px solid rgba(120,190,32,0.25);transition:all 0.3s;position:relative;z-index:100}
+.chat-box:hover{border-color:rgba(120,190,32,0.6);box-shadow:0 15px 50px rgba(120,190,32,0.2)}
+
+/* TÍTULO DE CAJA */
+.chat-box h2{color:#fff;font-size:22px;margin-bottom:15px;padding-bottom:10px;border-bottom:3px solid #78BE20;text-align:center;font-weight:bold;text-shadow:0 3px 10px rgba(0,0,0,1)}
+
+/* CONTENIDO DE CAJA - MUCHO MÁS TRANSPARENTE */
+.chat-content{flex:1;overflow-y:auto;padding:15px;background:rgba(0,0,0,0.1);border-radius:10px;color:#fff;font-size:16px;line-height:1.6;white-space:pre-wrap;word-wrap:break-word;text-shadow:0 3px 8px rgba(0,0,0,1)}
+
+/* MENSAJE INICIAL */
+.initial-message{color:#B8E986;font-style:italic;text-align:center;padding-top:20px;text-shadow:0 2px 6px rgba(0,0,0,0.9)}
+
+/* BOTÓN DE MICRÓFONO */
+.mic-button-container {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    z-index: 100;
+    position: relative;
+}
+
+.mic-button {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #78BE20 0%, #A0D468 100%);
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 10px 30px rgba(120,190,32,0.4);
+    transition: background 0.3s, box-shadow 0.3s, transform 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: bold;
+    font-size: 14px;
+    position: relative;
+    overflow: visible;
+}
+
+.mic-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 15px 40px rgba(120,190,32,0.6);
+}
+
+.mic-button:active {
+    transform: scale(0.95);
+}
+
+.mic-label {
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+    text-align: center;
+    transition: color 0.3s, text-shadow 0.3s;
+}
+
+.mic-label.recording-text {
+    color: #ff6666;
+    text-shadow: 0 2px 12px rgba(255,102,102,0.8);
+    animation: textPulse 1s ease-in-out infinite;
+}
+
+@keyframes textPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* BOTÓN MÁGICO */
+.magic-button{margin-top:20px;padding:15px 40px;background:linear-gradient(135deg, #78BE20 0%, #A0D468 100%);border:none;border-radius:50px;color:#fff;font-size:18px;font-weight:bold;cursor:pointer;box-shadow:0 10px 30px rgba(120,190,32,0.4);transition:all 0.3s;display:flex;align-items:center;gap:10px;animation:magicPulse 2s infinite}
+.magic-button:hover{transform:translateY(-5px);box-shadow:0 15px 40px rgba(120,190,32,0.6)}
+.magic-button:active{transform:translateY(0)}
+
+/* BOTÓN MUTE */
+.mute-button{position:fixed;bottom:20px;right:20px;width:60px;height:60px;border-radius:50%;background:rgba(120,190,32,0.9);border:3px solid rgba(255,255,255,0.3);cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:9999;transition:all 0.3s;box-shadow:0 4px 12px rgba(0,0,0,0.3)}
+.mute-button:hover{background:rgba(160,212,104,1);transform:scale(1.1)}
+.mute-button svg{width:30px;height:30px;fill:white}
+.magic-icon{display:flex;align-items:center;justify-content:center;animation:sparkle 1.5s infinite}.magic-icon svg{filter:drop-shadow(0 2px 4px rgba(255,215,0,0.5))}
+@keyframes magicPulse{0%,100%{box-shadow:0 10px 30px rgba(120,190,32,0.4)}50%{box-shadow:0 10px 40px rgba(120,190,32,0.7)}}
+@keyframes sparkle{0%,100%{transform:rotate(0deg) scale(1)}25%{transform:rotate(-10deg) scale(1.1)}75%{transform:rotate(10deg) scale(1.1)}}
+
+/* ESTILOS DEL SOMBRERO ELIMINADOS - Solo usamos el botón */
+
+/* MODAL PENSANDO CON VIDEO */
+.thinking-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+}
+
+.thinking-modal.active {
+    display: flex !important;
+}
+
+.thinking-video-container {
+    position: relative;
+    width: 80%;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.thinking-video {
+    width: 100%;
+    height: auto;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(120, 190, 32, 0.6);
+    border: 3px solid rgba(120, 190, 32, 0.8);
+}
+
+.thinking-text {
+    color: #78BE20;
+    font-size: 32px;
+    font-weight: bold;
+    text-align: center;
+    text-shadow: 0 4px 12px rgba(120, 190, 32, 0.8);
+    animation: thinkingPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes thinkingPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.05); }
+}
+
+/* ICONO MICRÓFONO */
+.mic-icon {
+    width: 70px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    pointer-events: none;
+}
+
+.mic-icon svg {
+    width: 60px !important;
+    height: 60px !important;
+    fill: #ffffff !important;
+    filter: drop-shadow(0 3px 6px rgba(0,0,0,0.4));
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* ANIMACIÓN GRABANDO */
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+}
+
+.mic-button.recording {
+    animation: pulse 1s ease-in-out infinite !important;
+    background: linear-gradient(135deg, #ff3333 0%, #ff6666 100%) !important;
+    box-shadow: 0 10px 50px rgba(255,68,68,0.8) !important;
+}
+
+.mic-button.recording .mic-icon {
+    animation: pulse 0.6s ease-in-out infinite !important;
+}
+
+.mic-button.recording .mic-icon svg {
+    fill: #ffffff !important;
+    filter: drop-shadow(0 4px 10px rgba(255,255,255,0.6)) !important;
+}
+
+/* ONDAS DE AUDIO */
+.audio-waves {
+    display: none;
+    width: 200px;
+    height: 60px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.audio-waves.active {
+    display: flex !important;
+}
+
+.wave {
+    width: 10px;
+    background: #78BE20;
+    border-radius: 5px;
+    animation: wave 0.8s ease-in-out infinite;
+    box-shadow: 0 0 10px rgba(120,190,32,0.5);
+    display: block;
+    flex-shrink: 0;
+    transform-origin: center bottom;
+}
+
+.wave:nth-child(1) {
+    height: 25px;
+    animation-delay: 0s;
+}
+
+.wave:nth-child(2) {
+    height: 40px;
+    animation-delay: 0.1s;
+}
+
+.wave:nth-child(3) {
+    height: 55px;
+    animation-delay: 0.2s;
+}
+
+.wave:nth-child(4) {
+    height: 40px;
+    animation-delay: 0.3s;
+}
+
+.wave:nth-child(5) {
+    height: 25px;
+    animation-delay: 0.4s;
+}
+
+@keyframes wave {
+    0%, 100% { 
+        transform: scaleY(0.5);
+        opacity: 0.8;
+    }
+    50% { 
+        transform: scaleY(1.3);
+        opacity: 1;
+    }
+}
+
+/* SCROLLBAR */
+.chat-content::-webkit-scrollbar{width:8px}
+.chat-content::-webkit-scrollbar-track{background:rgba(0,0,0,0.1);border-radius:10px}
+.chat-content::-webkit-scrollbar-thumb{background:#78BE20;border-radius:10px}
+.chat-content::-webkit-scrollbar-thumb:hover{background:#A0D468}
+
+/* RESPONSIVE */
+@media(max-width:1024px){
+    .chat-container{flex-direction:column;height:auto;max-height:70%}
+    .chat-box{min-height:200px}
+    .mic-button{width:100px;height:100px}
+}
+@media(max-width:768px){
+    .layer{padding:20px 10px}
+    .chat-box{padding:15px}
+    .chat-box h2{font-size:18px}
+    .chat-content{font-size:14px}
+    .mic-button{width:90px;height:90px;font-size:12px}
+    .exit{width:40px;height:40px}
+}
+</style>
+</head>
+<body>
+<!-- MODAL PENSANDO CON VIDEO -->
+<div class="thinking-modal" id="thinkingModal">
+    <div class="thinking-video-container">
+        <video id="thinkingVideo" class="thinking-video" muted loop playsinline>
+            <source src="thinking-video.mp4" type="video/mp4">
+        </video>
+        <div class="thinking-text">Pensando...</div>
+    </div>
+</div>
+
+<!-- Cargar configuración de API -->
+<script src="api-config.js"></script>
+
+<!-- MÚSICA GLOBAL -->
+<script src="global-music.js"></script>
+
+<!-- BOTÓN MUTE -->
+<button class="mute-button" id="muteBtn" onclick="if(window.MIAMusic) window.MIAMusic.toggleMute()">
+    <svg id="soundIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+    </svg>
+</button>
+
+<!-- VIDEO DE FONDO -->
+<div class="video-container">
+<video id="bg-video" autoplay muted loop playsinline>
+
+<!-- Fallback: CSS animation si no cargan videos -->
+</video>
+</div>
+
+<!-- CAPA PRINCIPAL -->
+<div class="layer">
+<!-- BOTÓN DE VOLVER (IZQUIERDA) - CONSERVA CONTEXTO -->
+<div class="back-button" onclick="goBackToSelector()">←</div>
+
+<!-- BOTÓN DE SALIDA (DERECHA) - REINICIA TODO -->
+<div class="exit-button" onclick="restartAll()"></div>
+
+<!-- CONTENEDOR DE CAJAS -->
+<div class="chat-container">
+<!-- CAJA IZQUIERDA: LO QUE EL USUARIO DIJO -->
+<div class="chat-box">
+<h2 id="user-title">Lo que has dicho</h2>
+<div class="chat-content" id="user-text">
+<div class="initial-message">Pulsa el botón del micrófono para empezar...</div>
+</div>
+</div>
+
+<!-- CAJA DERECHA: LO QUE MIA RESPONDE -->
+<div class="chat-box">
+<h2 id="mia-title">Respuesta de MIA</h2>
+<div class="chat-content" id="mia-text">
+<div class="initial-message" id="mia-initial">¿En qué puedo ayudarte hoy?</div>
+</div>
+</div>
+</div>
+
+<!-- BOTÓN DE MICRÓFONO -->
+<div class="mic-button-container">
+<button class="mic-button" id="mic-btn" onclick="toggleRecording()">
+<div class="mic-icon">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="60" height="60" fill="#ffffff">
+<path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+<path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+</svg>
+</div>
+</button>
+
+<!-- ONDAS ELIMINADAS -->
+
+<div class="mic-label" id="mic-text">Pregunta a MIA</div>
+
+<!-- BOTÓN VER RECOMENDACIÓN -->
+<button class="magic-button" id="magic-btn" onclick="viewRecommendation()" style="display:none;">
+<span id="magic-text">Ver recomendación</span>
+</button>
+</div>
+</div>
+
+<script>
+// Mantener fullscreen si estaba activado
+if (sessionStorage.getItem('fullscreenEnabled') === 'true') {
+    const elem = document.documentElement;
+    setTimeout(() => {
+        if (elem.requestFullscreen) {
+            elem.requestFullscreen().catch(err => console.log('Fullscreen error:', err));
+        } else if (elem.webkitRequestFullscreen) {
+            elem.webkitRequestFullscreen();
+        } else if (elem.msRequestFullscreen) {
+            elem.msRequestFullscreen();
+        }
+    }, 100);
+}
+
+// Detectar cuando se sale de fullscreen manualmente
+document.addEventListener('fullscreenchange', function() {
+    if (!document.fullscreenElement) {
+        sessionStorage.removeItem('fullscreenEnabled');
+    }
+});
+document.addEventListener('webkitfullscreenchange', function() {
+    if (!document.webkitFullscreenElement) {
+        sessionStorage.removeItem('fullscreenEnabled');
+    }
+});
+
+// TRADUCCIONES
+const translations = {
+    es: {
+        userTitle: 'Lo que has dicho',
+        miaTitle: 'Respuesta de MIA',
+        miaInitial: '¿En qué puedo ayudarte hoy?',
+        micText: 'Pregunta a MIA',
+        micRecording: 'Grabando...',
+        userInitial: 'Pulsa el botón del micrófono para empezar...',
+        magicButton: 'Ver recomendación',
+        thinking: 'Pensando...'
+    },
+    en: {
+        userTitle: 'What you said',
+        miaTitle: "MIA's Response",
+        miaInitial: 'How can I help you today?',
+        micText: 'Ask MIA',
+        micRecording: 'Recording...',
+        userInitial: 'Press the microphone button to start...',
+        magicButton: 'View recommendation',
+        thinking: 'Thinking...'
+    },
+    fr: {
+        userTitle: 'Ce que vous avez dit',
+        miaTitle: 'Réponse de MIA',
+        miaInitial: 'Comment puis-je vous aider aujourd\'hui?',
+        micText: 'Demandez à MIA',
+        micRecording: 'Enregistrement...',
+        userInitial: 'Appuyez sur le bouton du microphone pour commencer...',
+        magicButton: 'Voir recommandation',
+        thinking: 'Réflexion...'
+    },
+    de: {
+        userTitle: 'Was Sie gesagt haben',
+        miaTitle: 'MIAs Antwort',
+        miaInitial: 'Wie kann ich Ihnen heute helfen?',
+        micText: 'Fragen Sie MIA',
+        micRecording: 'Aufnahme...',
+        userInitial: 'Drücken Sie die Mikrofontaste, um zu beginnen...',
+        magicButton: 'Empfehlung ansehen',
+        textQueryAlert: 'Bitte schreiben Sie Ihre Anfrage',
+        thinking: 'Nachdenken...'
+    },
+    it: {
+        userTitle: 'Quello che hai detto',
+        miaTitle: 'Risposta di MIA',
+        miaInitial: 'Come posso aiutarti oggi?',
+        micText: 'Chiedi a MIA',
+        micRecording: 'Registrazione...',
+        userInitial: 'Premi il pulsante del microfono per iniziare...',
+        magicButton: 'Visualizza raccomandazione',
+        textQueryAlert: 'Per favore scrivi la tua domanda',
+        thinking: 'Pensando...'
+    },
+    sv: {
+        userTitle: 'Vad du sa',
+        miaTitle: 'MIAs svar',
+        miaInitial: 'Hur kan jag hjälpa dig idag?',
+        micText: 'Fråga MIA',
+        micRecording: 'Spelar in...',
+        userInitial: 'Tryck på mikrofonknappen för att börja...',
+        magicButton: 'Se rekommendation',
+        textQueryAlert: 'Skriv din fråga',
+        thinking: 'Tänker...'
+    }
+};
+
+// ESTADO
+let isRecording = false;
+let recognition = null;
+let currentLang = 'es';
+let inactivityTimer = null;
+const INACTIVITY_TIMEOUT = 45000; // 45 segundos
+const MAX_INTERACTIONS = 3; // Máximo 3 interacciones antes de recomendar
+
+// 💾 RESTAURAR HISTORIAL DE CONVERSACIÓN desde sessionStorage (memoria de sesión)
+let conversationHistory = [];
+try {
+    const savedHistory = sessionStorage.getItem('conversationHistory');
+    if (savedHistory) {
+        conversationHistory = JSON.parse(savedHistory);
+        console.log('💾 Historial de conversación restaurado:', conversationHistory.length, 'mensajes');
+    }
+} catch (e) {
+    console.warn('⚠️ Error al restaurar historial:', e);
+}
+
+let lastRecommendations = []; // Últimas recomendaciones de MIA
+let interactionCount = 0; // Contador de interacciones
+
+// OBTENER IDIOMA
+function getLang() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('lang') || 'es';
+}
+
+// APLICAR TRADUCCIONES
+function applyTranslations() {
+    currentLang = getLang();
+    const t = translations[currentLang] || translations.es;
+    
+    document.getElementById('user-title').textContent = t.userTitle;
+    document.getElementById('mia-title').textContent = t.miaTitle;
+    document.getElementById('mia-initial').textContent = t.miaInitial;
+    document.getElementById('mic-text').textContent = t.micText;
+    document.getElementById('magic-text').textContent = t.magicButton;
+    
+    const userInitial = document.querySelector('#user-text .initial-message');
+    if (userInitial) {
+        userInitial.textContent = t.userInitial;
+    }
+}
+
+// INICIALIZAR WEB SPEECH API
+function initSpeechRecognition() {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        console.log('Web Speech API no disponible');
+        return false;
+    }
+    
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
+    
+    // MAPEO DE IDIOMAS
+    const langMap = {
+        'es': 'es-ES',
+        'en': 'en-US',
+        'fr': 'fr-FR',
+        'de': 'de-DE',
+        'it': 'it-IT',
+        'sv': 'sv-SE'
+    };
+    
+    recognition.lang = langMap[currentLang] || 'es-ES';
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    
+    recognition.onresult = function(event) {
+        const transcript = event.results[0][0].transcript;
+        displayUserText(transcript);
+        handleMIAResponse(transcript);
+    };
+    
+    recognition.onerror = function(event) {
+        console.error('Error de reconocimiento:', event.error);
+        stopRecording();
+    };
+    
+    recognition.onend = function() {
+        stopRecording();
+    };
+    
+    return true;
+}
+
+// TOGGLE GRABACIÓN
+function toggleRecording() {
+    if (isRecording) {
+        stopRecording();
+    } else {
+        startRecording();
+    }
+}
+
+// INICIAR GRABACIÓN
+function startRecording() {
+    if (!recognition && !initSpeechRecognition()) {
+        alert('Tu navegador no soporta reconocimiento de voz');
+        return;
+    }
+    
+    isRecording = true;
+    const btn = document.getElementById('mic-btn');
+    const text = document.getElementById('mic-text');
+    // const waves = document.getElementById('waves'); // ELIMINADO
+    const t = translations[currentLang] || translations.es;
+    
+    console.log('🎤 INICIANDO GRABACIÓN');
+    console.log('Botón:', btn);
+    // console.log('Ondas:', waves); // ELIMINADO
+    
+    // Activar todas las animaciones CON ESTILOS INLINE
+    btn.classList.add('recording');
+    btn.style.background = 'linear-gradient(135deg, #ff3333 0%, #ff6666 100%)';
+    btn.style.animation = 'pulse 1s ease-in-out infinite';
+    btn.style.boxShadow = '0 10px 50px rgba(255,68,68,0.8)';
+    
+    text.classList.add('recording-text');
+    text.textContent = t.micRecording;
+    text.style.color = '#ff6666';
+    
+    // Ondas eliminadas
+    
+    // Código de ondas eliminado
+    
+    console.log('✅ Clases y estilos aplicados');
+    console.log('Botón tiene clase recording:', btn.classList.contains('recording'));
+    // Logs de ondas eliminados
+    
+    // 🎵 ATENUAR MÚSICA mientras se graba
+    if (window.MIAMusic) {
+        window.MIAMusic.duck();
+    }
+    
+    try {
+        recognition.start();
+    } catch (e) {
+        console.error('Error al iniciar:', e);
+        stopRecording();
+    }
+}
+
+// DETENER GRABACIÓN
+function stopRecording() {
+    isRecording = false;
+    const btn = document.getElementById('mic-btn');
+    const text = document.getElementById('mic-text');
+    // const waves = document.getElementById('waves'); // ELIMINADO
+    const t = translations[currentLang] || translations.es;
+    
+    console.log('🛑 DETENIENDO GRABACIÓN');
+    
+    // Desactivar todas las animaciones Y LIMPIAR ESTILOS INLINE
+    btn.classList.remove('recording');
+    btn.style.background = '';
+    btn.style.animation = '';
+    btn.style.boxShadow = '';
+    
+    text.classList.remove('recording-text');
+    text.textContent = t.micText;
+    text.style.color = '';
+    
+    // Código de limpieza de ondas eliminado
+    
+    console.log('✅ Animaciones detenidas y estilos limpiados');
+    
+    // 🎵 RESTAURAR VOLUMEN NORMAL de la música
+    if (window.MIAMusic) {
+        window.MIAMusic.unduck();
+    }
+    
+    if (recognition) {
+        try {
+            recognition.stop();
+        } catch (e) {
+            console.error('Error al detener:', e);
+        }
+    }
+}
+
+// MOSTRAR TEXTO DEL USUARIO
+function displayUserText(text) {
+    const userBox = document.getElementById('user-text');
+    userBox.innerHTML = `<div style="color:#fff;font-weight:normal;text-shadow:0 1px 3px rgba(0,0,0,0.8)">${text}</div>`;
+}
+
+// OBTENER RESPUESTA DE MIA (CON API)
+async function handleMIAResponse(userText) {
+    const miaBox = document.getElementById('mia-text');
+    
+    // Mostrar modal con video "pensando..."
+    showThinkingModal();
+    
+    try {
+        // Llamar a la API directamente (process-query.js en Cloudflare)
+        // Incrementar contador de interacciones
+        interactionCount++;
+        console.log(`📊 Interacción ${interactionCount}/${MAX_INTERACTIONS}`);
+        
+        // Forzar recomendación si se alcanzó el límite
+        const forceRecommendation = interactionCount >= MAX_INTERACTIONS;
+        
+        const apiResponse = await fetch('/api/process-query', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                query: userText,
+                language: currentLang,
+                conversationHistory: conversationHistory,
+                forceRecommendation: forceRecommendation
+            })
+        });
+        
+        if (!apiResponse.ok) {
+            throw new Error(`API error: ${apiResponse.status}`);
+        }
+        
+        const data = await apiResponse.json();
+        console.log('🚀🚀🚀 ============ INICIO PROCESAMIENTO RESPUESTA ============');
+        console.log('🚀 Respuesta completa de API:', JSON.stringify(data, null, 2));
+        console.log('🔍 Tipo de data.response:', typeof data.response);
+        console.log('🔍 Tipo de data.recommendations:', typeof data.recommendations);
+        console.log('🔍 data.isRecommendation:', data.isRecommendation);
+        console.log('🔍 data.ready:', data.ready);
+        
+        // DEBUG ULTRA DETALLADO
+        if (data.recommendations) {
+            console.log('🎯🎯🎯 data.recommendations EXISTE!');
+            console.log('- Es array?', Array.isArray(data.recommendations));
+            console.log('- Longitud:', data.recommendations.length);
+            if (data.recommendations.length > 0) {
+                console.log('- Primer elemento:', JSON.stringify(data.recommendations[0], null, 2));
+            }
+        } else {
+            console.log('❌ data.recommendations es null/undefined');
+        }
+        
+        // ✅ NUEVA LÓGICA MEJORADA: Detectar JSON y procesarlo correctamente
+        let isRecommendationResponse = false;
+        let displayText = '';
+        
+        const t = translations[currentLang] || translations.es;
+        const magicMessage = {
+            es: 'He encontrado las mejores opciones para ti. Pulsa en el botón de ver recomendaciones.',
+            en: 'I found the best options for you. Press the view recommendations button.',
+            fr: 'J\'ai trouvé les meilleures options pour vous. Appuyez sur le bouton voir les recommandations.',
+            de: 'Ich habe die besten Optionen für Sie gefunden. Drücken Sie die Schaltfläche Empfehlungen anzeigen.',
+            it: 'Ho trovato le migliori opzioni per te. Premi il pulsante visualizza raccomandazioni.',
+            sv: 'Jag hittade de bästa alternativen för dig. Tryck på knappen visa rekommendationer.'
+        };
+        
+        // CASO 1: La API envía recommendations como ARRAY directamente (PRIORITARIO)
+        if (data.recommendations && Array.isArray(data.recommendations) && data.recommendations.length > 0) {
+            console.log('✅✅✅✅✅ ============ CASO 1 ACTIVADO ============');
+            console.log('🎯 API envía array de recommendations directamente');
+            console.log('🎯 Número de productos:', data.recommendations.length);
+            console.log('🎯 Primer producto completo:', JSON.stringify(data.recommendations[0], null, 2));
+            
+            lastRecommendations = data.recommendations;
+            isRecommendationResponse = true;
+            displayText = magicMessage[currentLang] || magicMessage.es;
+            
+            console.log('✅ lastRecommendations GUARDADO con', lastRecommendations.length, 'productos');
+            console.log('✅ isRecommendationResponse = true');
+            console.log('✅ displayText =', displayText);
+            console.log('✅✅✅✅✅ ============ FIN CASO 1 ============');
+        }
+        // CASO 2: La respuesta es un JSON string - DETECCIÓN AGRESIVA
+        else if (typeof data.response === 'string' && 
+                (data.response.trim().startsWith('{') || 
+                 data.response.includes('"ready"') ||
+                 data.response.includes('"recommendations"') ||
+                 data.response.includes('{"id":'))) {
+            
+            console.log('🔍 Detectado posible JSON en response, intentando parsear...');
+            console.log('📝 Response completo:', data.response);
+            
+            try {
+                // Limpiar cualquier texto antes/después del JSON
+                let cleanJson = data.response.trim();
+                const jsonStart = cleanJson.indexOf('{');
+                const jsonEnd = cleanJson.lastIndexOf('}');
+                if (jsonStart >= 0 && jsonEnd > jsonStart) {
+                    cleanJson = cleanJson.substring(jsonStart, jsonEnd + 1);
+                }
+                
+                console.log('🧹 JSON limpio:', cleanJson.substring(0, 150));
+                
+                const parsedResponse = JSON.parse(cleanJson);
+                console.log('✅ JSON parseado exitosamente:', parsedResponse);
+                
+                // Detectar recomendaciones de múltiples formas
+                const hasRecommendations = 
+                    (parsedResponse.ready && parsedResponse.recommendations && parsedResponse.recommendations.length > 0) ||
+                    (parsedResponse.recommendations && Array.isArray(parsedResponse.recommendations) && parsedResponse.recommendations.length > 0);
+                
+                if (hasRecommendations) {
+                    console.log('✅ Recomendaciones encontradas en JSON:', parsedResponse.recommendations.length, 'productos');
+                    console.log('📋 Primera recomendación:', parsedResponse.recommendations[0]);
+                    lastRecommendations = parsedResponse.recommendations;
+                    isRecommendationResponse = true;
+                    displayText = magicMessage[currentLang] || magicMessage.es;
+                    console.log('✨ Configurando isRecommendationResponse=true y guardando', lastRecommendations.length, 'recomendaciones');
+                } else {
+                    console.log('⚠️ JSON válido pero sin recomendaciones');
+                    console.log('parsedResponse structure:', Object.keys(parsedResponse));
+                    // Si es JSON pero no tiene recomendaciones, mostrar mensaje genérico
+                    displayText = magicMessage[currentLang] || magicMessage.es;
+                }
+            } catch (jsonError) {
+                console.log('❌ Error parsing JSON:', jsonError.message);
+                console.log('📝 Contenido problemático:', data.response.substring(0, 200));
+                // Si el parsing falla pero sigue pareciendo JSON, mostrar mensaje amigable
+                if (data.response.includes('"recommendations"') || data.response.includes('{"id":')) {
+                    console.log('⚠️ Parece JSON pero no se puede parsear - usando mensaje amigable');
+                    displayText = magicMessage[currentLang] || magicMessage.es;
+                } else {
+                    displayText = data.response;
+                }
+            }
+        }
+        // CASO 3: Respuesta de texto normal
+        else {
+            console.log('💬 Respuesta de texto normal');
+            displayText = data.response || 'Disculpa, no pude procesar tu consulta.';
+        }
+        
+        // displayText ya fue procesado arriba
+        
+        // Guardar en historial
+        conversationHistory.push(
+            { role: 'user', content: userText },
+            { role: 'assistant', content: displayText }
+        );
+        
+        // 💾 GUARDAR HISTORIAL EN sessionStorage (memoria de sesión)
+        try {
+            sessionStorage.setItem('conversationHistory', JSON.stringify(conversationHistory));
+            console.log('💾 Historial guardado:', conversationHistory.length, 'mensajes');
+        } catch (e) {
+            console.warn('⚠️ Error al guardar historial:', e);
+        }
+        
+        // Ocultar modal de pensando
+        hideThinkingModal();
+        
+        // Mostrar respuesta
+        miaBox.innerHTML = `<div style="color:#fff;font-weight:normal;text-shadow:0 1px 3px rgba(0,0,0,0.8)">${displayText}</div>`;
+        
+        // 🔊 REPRODUCIR VOZ CON ELEVENLABS
+        speakWithElevenLabs(displayText);
+        
+        // ✅ MOSTRAR SOMBRERO Y BOTÓN - LÓGICA MEJORADA
+        console.log('🔍 Verificando si hay recomendaciones...');
+        console.log('isRecommendationResponse:', isRecommendationResponse);
+        console.log('data.isRecommendation:', data.isRecommendation);
+        console.log('lastRecommendations:', lastRecommendations ? lastRecommendations.length : 'null');
+        console.log('data.recommendations:', data.recommendations ? data.recommendations.length : 'null');
+        
+        let finalRecommendations = null;
+        
+        // CASO 1: Recomendaciones desde JSON parseado localmente
+        if (isRecommendationResponse && lastRecommendations && lastRecommendations.length > 0) {
+            finalRecommendations = lastRecommendations;
+            console.log('✅ Usando recomendaciones desde JSON parseado:', finalRecommendations.length);
+        }
+        // CASO 2: Recomendaciones directas desde API
+        else if (data.isRecommendation && data.recommendations && data.recommendations.length > 0) {
+            finalRecommendations = data.recommendations;
+            lastRecommendations = data.recommendations; // Guardar para uso posterior
+            console.log('✅ Usando recomendaciones desde API:', finalRecommendations.length);
+        }
+        // CASO 3: Buscar recomendaciones en data.recommendations aunque no haya flag isRecommendation
+        else if (data.recommendations && Array.isArray(data.recommendations) && data.recommendations.length > 0) {
+            finalRecommendations = data.recommendations;
+            lastRecommendations = data.recommendations;
+            console.log('✅ Encontradas recomendaciones en data.recommendations:', finalRecommendations.length);
+        }
+        
+        // 🚀 VERIFICACIÓN FINAL: Solo mostrar sombrero si HAY recomendaciones REALES
+        const messageHasRecommendation = displayText.includes('sombrero mágico') || 
+                                        displayText.includes('magic hat') || 
+                                        displayText.includes('chapeau magique') || 
+                                        displayText.includes('Zauberhut') || 
+                                        displayText.includes('cappello magico') || 
+                                        displayText.includes('magiska hatten');
+        
+        console.log('🔍 Verificación final antes de mostrar sombrero:');
+        console.log('- finalRecommendations:', finalRecommendations ? finalRecommendations.length : 'null');
+        console.log('- lastRecommendations:', lastRecommendations ? lastRecommendations.length : 'null');
+        console.log('- messageHasRecommendation:', messageHasRecommendation);
+        
+        // SOLO mostrar si hay recomendaciones REALES (no dummy)
+        if (finalRecommendations && finalRecommendations.length > 0 && !finalRecommendations[0].dummy) {
+            console.log('✅✅✅✅✅ ============ MOSTRANDO SOMBRERO MÁGICO ============');
+            console.log('🎯 Productos reales:', finalRecommendations.length);
+            console.log('🎯 Primer producto completo:', JSON.stringify(finalRecommendations[0], null, 2));
+            console.log('🎯 lastRecommendations tiene', lastRecommendations.length, 'productos REALES');
+            console.log('🎯 Llamando a showMagicButton()...');
+            
+            showMagicButton();
+            
+            // VERIFICACIÓN Y FORZADO
+            setTimeout(() => {
+                const btn = document.getElementById('magic-btn');
+                
+                console.log('🔍 Verificando visibilidad del botón:');
+                console.log('- Botón existe:', !!btn);
+                
+                if (btn) {
+                    console.log('- Botón display:', btn.style.display);
+                    
+                    // FORZAR VISIBILIDAD DEL BOTÓN
+                    btn.style.display = 'flex';
+                    
+                    console.log('✅ FORZADO: Botón "Ver recomendación" ahora visible');
+                } else {
+                    console.error('❌ ERROR: Botón magic-btn no encontrado');
+                }
+            }, 300);
+        } else {
+            console.log('❌ SIN RECOMENDACIONES REALES - Ocultando sombrero');
+            console.log('Debug:', {
+                hasFinalRecommendations: !!finalRecommendations,
+                finalRecsLength: finalRecommendations ? finalRecommendations.length : 0,
+                hasLastRecommendations: !!lastRecommendations,
+                lastRecsLength: lastRecommendations ? lastRecommendations.length : 0,
+                messageHasRec: messageHasRecommendation
+            });
+            hideMagicButton();
+        }
+        
+    } catch (error) {
+        console.error('Error getting MIA response:', error);
+        
+        // Ocultar modal de pensando
+        hideThinkingModal();
+        
+        // Fallback si falla la API
+        const fallbackText = {
+            es: 'Disculpa, estoy teniendo problemas técnicos. ¿Podrías contarme más sobre tu proyecto de bricolaje?',
+            en: 'Sorry, I\'m having technical issues. Could you tell me more about your DIY project?',
+            fr: 'Désolé, j\'ai des problèmes techniques. Pourriez-vous m\'en dire plus sur votre projet?',
+            de: 'Entschuldigung, ich habe technische Probleme. Könnten Sie mir mehr über Ihr Projekt erzählen?',
+            it: 'Scusa, ho problemi tecnici. Potresti dirmi di più sul tuo progetto?',
+            sv: 'Förlåt, jag har tekniska problem. Kan du berätta mer om ditt projekt?'
+        };
+        
+        miaBox.innerHTML = `<div style="color:#fff;font-weight:normal;text-shadow:0 1px 3px rgba(0,0,0,0.8)">${fallbackText[currentLang] || fallbackText.es}</div>`;
+    }
+}
+
+// MOSTRAR MODAL PENSANDO CON VIDEO
+function showThinkingModal() {
+    const modal = document.getElementById('thinkingModal');
+    const video = document.getElementById('thinkingVideo');
+    const thinkingText = document.querySelector('.thinking-text');
+    
+    // Actualizar texto según idioma
+    const t = translations[currentLang] || translations.es;
+    if (thinkingText) {
+        thinkingText.textContent = t.thinking || 'Pensando...';
+    }
+    
+    modal.classList.add('active');
+    
+    // Reproducir video SIN SONIDO y en LOOP (según especificaciones)
+    video.muted = true;
+    video.loop = true;
+    video.play().catch(e => {
+        console.log('Video autoplay bloqueado:', e);
+    });
+    
+    console.log('🎥 Modal pensando mostrado (sin sonido, en loop)');
+}
+
+// OCULTAR MODAL PENSANDO
+function hideThinkingModal() {
+    const modal = document.getElementById('thinkingModal');
+    const video = document.getElementById('thinkingVideo');
+    
+    modal.classList.remove('active');
+    
+    // Pausar y silenciar video
+    video.pause();
+    video.muted = true;
+    video.currentTime = 0; // Reiniciar al inicio
+    
+    console.log('🚫 Modal pensando ocultado');
+}
+
+// MOSTRAR BOTÓN MÁGICO
+function showMagicButton() {
+    console.log('🔵🔵🔵 showMagicButton() EJECUTÁNDOSE');
+    const magicBtn = document.getElementById('magic-btn');
+    console.log('🔍 Elemento encontrado:', !!magicBtn);
+    
+    if (magicBtn) {
+        console.log('🔍 Display antes:', magicBtn.style.display);
+        magicBtn.style.display = 'flex';
+        console.log('🔍 Display después:', magicBtn.style.display);
+        console.log('✅✅✅ Botón "Ver recomendación" MOSTRADO');
+        
+        // Verificar dimensiones y posición
+        const rect = magicBtn.getBoundingClientRect();
+        console.log('📏 Dimensiones del botón:', {
+            width: rect.width,
+            height: rect.height,
+            top: rect.top,
+            left: rect.left,
+            visible: rect.width > 0 && rect.height > 0
+        });
+    } else {
+        console.error('❌❌❌ ERROR CRÍTICO: Elemento magic-btn NO ENCONTRADO en el DOM');
+    }
+}
+
+// OCULTAR BOTÓN MÁGICO
+function hideMagicButton() {
+    console.log('🔴 hideMagicButton() ejecutándose');
+    const magicBtn = document.getElementById('magic-btn');
+    if (magicBtn) {
+        magicBtn.style.display = 'none';
+        console.log('🔒 Botón "Ver recomendación" ocultado');
+    }
+}
+
+// VER RECOMENDACIÓN
+function viewRecommendation() {
+    console.log('👁️ viewRecommendation() llamada');
+    console.log('- lastRecommendations:', lastRecommendations);
+    console.log('- lastRecommendations.length:', lastRecommendations ? lastRecommendations.length : 'null');
+    
+    // Verificar que no sean recomendaciones dummy
+    if (lastRecommendations && lastRecommendations.length > 0 && !lastRecommendations[0].dummy) {
+        console.log('💾 Guardando recomendaciones REALES en sessionStorage:', lastRecommendations.length, 'productos');
+        console.log('📝 Primer producto:', lastRecommendations[0]);
+        
+        const jsonString = JSON.stringify(lastRecommendations);
+        console.log('📜 JSON length:', jsonString.length, 'caracteres');
+        
+        sessionStorage.setItem('miaRecommendations', jsonString);
+        
+        // Verificar que se guardó correctamente
+        const saved = sessionStorage.getItem('miaRecommendations');
+        console.log('✅ Verificación guardado:', saved ? 'GUARDADO OK (' + saved.length + ' chars)' : 'ERROR AL GUARDAR');
+        
+        console.log('🚀 Navegando a results.html?lang=' + currentLang);
+        window.location.href = 'results.html?lang=' + currentLang;
+    } else {
+        console.error('❌ No hay recomendaciones REALES para mostrar');
+        console.log('Debugging lastRecommendations:', {
+            exists: !!lastRecommendations,
+            type: typeof lastRecommendations,
+            isArray: Array.isArray(lastRecommendations),
+            length: lastRecommendations ? lastRecommendations.length : 'N/A',
+            isDummy: lastRecommendations && lastRecommendations[0] ? lastRecommendations[0].dummy : false
+        });
+        
+        // Mostrar alerta al usuario
+        const t = translations[currentLang] || translations.es;
+        alert(t.noRecommendations || 'No hay recomendaciones disponibles');
+    }
+}
+
+// VOLVER AL VIDEO INICIAL
+// VOLVER A SELECTOR (CONSERVA CONTEXTO)
+function goBackToSelector() {
+    // Redirigir a video-intro.html
+    const currentLang = new URLSearchParams(window.location.search).get('lang') || 'es';
+    window.location.href = 'video-intro.html?lang=' + currentLang;
+    console.log('← Volviendo a video-intro');
+}
+
+// REINICIAR TODO (BORRA CONTEXTO)
+function restartAll() {
+    // Borrar todo el contexto y datos
+    sessionStorage.clear();
+    localStorage.clear();
+    
+    // Reiniciar historial de conversación
+    conversationHistory = [];
+    lastRecommendations = null;
+    interactionCount = 0; // Reset contador de interacciones
+    
+    // Volver al video inicial
+    window.location.href = 'video-intro.html';
+    console.log('❌ Reiniciando todo - Contexto borrado');
+}
+// La música está gestionada por global-music.js
+
+// IR A RESULTADOS (FUNCIÓN ORIGINAL)
+function goBack() {
+    sessionStorage.setItem('miaRecommendations', JSON.stringify(lastRecommendations));
+    window.location.href = 'results.html';
+}
+
+// TEMPORIZADOR DE INACTIVIDAD
+function resetInactivityTimer() {
+    if (inactivityTimer) {
+        clearTimeout(inactivityTimer);
+    }
+    inactivityTimer = setTimeout(() => {
+        console.log('Inactividad detectada - Volviendo al inicio');
+        goBack();
+    }, INACTIVITY_TIMEOUT);
+}
+
+// DETECTAR ACTIVIDAD DEL USUARIO
+function setupInactivityDetection() {
+    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+    events.forEach(event => {
+        document.addEventListener(event, resetInactivityTimer, true);
+    });
+    resetInactivityTimer(); // Iniciar el timer
+}
+
+// INICIALIZACIÓN
+document.addEventListener('DOMContentLoaded', function() {
+    applyTranslations();
+    
+    // Reproducir video con fallback
+    const video = document.getElementById('bg-video');
+    video.play().catch(e => {
+        console.log('Video no disponible, mostrando animación fallback:', e);
+        // Si el video no carga, asegurar que se vea la animación de fondo
+        video.style.display = 'none';
+    });
+    
+    // Verificar si el video se cargó después de 3 segundos
+    setTimeout(() => {
+        if (video.paused || video.error) {
+            console.log('Video no se cargó correctamente, usando fallback');
+            video.style.display = 'none';
+        }
+    }, 3000);
+    
+    // Inicializar reconocimiento de voz
+    initSpeechRecognition();
+    
+    // Iniciar detección de inactividad
+    setupInactivityDetection();
+    
+    // 📝 DETECTAR SI HAY UNA CONSULTA PRE-CARGADA DESDE EL INPUT DE TEXTO
+    const urlParams = new URLSearchParams(window.location.search);
+    const preloadedQuery = urlParams.get('query');
+    
+    if (preloadedQuery && preloadedQuery.trim() !== '') {
+        console.log('📝 Consulta pre-cargada detectada:', preloadedQuery);
+        // Mostrar la consulta en la caja del usuario
+        displayUserText(preloadedQuery);
+        // Procesar la consulta automáticamente después de un pequeño delay
+        setTimeout(() => {
+            handleMIAResponse(preloadedQuery);
+        }, 500);
+    }
+});
+
+        // 🎙️ FUNCIÓN PARA SÍNTESIS DE VOZ CON ELEVENLABS
+        async function speakWithElevenLabs(text) {
+            try {
+                // Limpiar el texto de emojis y caracteres especiales
+                const cleanText = text.replace(/[🎯💬📋⚠️✅❌]/g, '').trim();
+                
+                if (!cleanText || cleanText.length < 3) {
+                    console.log('Texto demasiado corto para sintetizar');
+                    return;
+                }
+
+                console.log('🎙️ Sintetizando voz con ElevenLabs:', cleanText.substring(0, 50) + '...');
+
+                // Llamar a la API de ElevenLabs a través de Cloudflare Function
+                const response = await fetch('/api/text-to-speech', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        text: cleanText,
+                        voice_id: '6sFKzaJr574YWVu4UuJF' // Voz femenina Sarah (español)
+                    })
+                });
+
+                if (response.ok) {
+                    const audioBlob = await response.blob();
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    const audio = new Audio(audioUrl);
+                    
+                    audio.onended = () => {
+                        URL.revokeObjectURL(audioUrl);
+                        console.log('✅ Reproducción de voz completada');
+                    };
+                    
+                    await audio.play();
+                    console.log('🔊 Reproduciendo voz...');
+                } else {
+                    console.error('❌ Error en síntesis de voz:', response.status);
+                }
+            } catch (error) {
+                console.error('❌ Error en speakWithElevenLabs:', error);
+                // Continuar sin voz si falla
+            }
+        }
+
+</script>
+    <!-- Inactivity timeout (45s) -->
+    <script src="inactivity-timeout.js"></script>
+</body>
+</html>

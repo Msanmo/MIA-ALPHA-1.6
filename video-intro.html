@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIA DIY Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            overflow: hidden;
+            background: #000;
+            cursor: pointer;
+        }
+
+        #videoContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #000;
+        }
+
+        #entradaVideo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        /* BOTÓN MUTE */
+        .mute-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(120, 190, 32, 0.9);
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .mute-button:hover {
+            background: rgba(160, 212, 104, 1);
+            transform: scale(1.1);
+        }
+
+        .mute-button svg {
+            width: 30px;
+            height: 30px;
+            fill: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- MÚSICA GLOBAL -->
+    <script src="global-music.js"></script>
+    
+    <!-- BOTÓN MUTE -->
+    <button class="mute-button" id="muteBtn" onclick="if(window.MIAMusic) window.MIAMusic.toggleMute()">
+        <svg id="soundIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+        </svg>
+    </button>
+
+    <div id="videoContainer">
+        <video id="entradaVideo" autoplay loop muted playsinline>
+            <source src="videos/entrada-mia.mp4" type="video/mp4">
+            <source src="https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4" type="video/mp4">
+            Tu navegador no soporta el elemento de video.
+        </video>
+    </div>
+
+    <script>
+        // Verificar si está logueado
+        if (sessionStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.href = 'index.html';
+        }
+
+        // Función para activar fullscreen
+        function activateFullscreen() {
+            const elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen().catch(err => {
+                    console.log('Fullscreen error:', err);
+                    // Reintentar después de un momento
+                    setTimeout(activateFullscreen, 500);
+                });
+            } else if (elem.webkitRequestFullscreen) {
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) {
+                elem.msRequestFullscreen();
+            }
+        }
+
+        // Mantener fullscreen si estaba activado
+        if (sessionStorage.getItem('fullscreenEnabled') === 'true') {
+            // Intentar inmediatamente
+            activateFullscreen();
+            
+            // Reintentar después de que el DOM esté completamente cargado
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(activateFullscreen, 200);
+            });
+            
+            // Reintentar cuando el video empiece a reproducirse
+            const video = document.getElementById('entradaVideo');
+            if (video) {
+                video.addEventListener('play', function() {
+                    setTimeout(activateFullscreen, 100);
+                }, { once: true });
+            }
+        }
+
+        // Al hacer clic en cualquier parte de la pantalla, ir a selector de idiomas
+        document.body.addEventListener('click', function() {
+            window.location.href = 'language-selector.html';
+        });
+
+        // Asegurar que el video se reproduzca en dispositivos móviles
+        document.addEventListener('DOMContentLoaded', function() {
+            const video = document.getElementById('entradaVideo');
+            video.play().catch(e => console.log('Autoplay failed:', e));
+            
+            // 🎵 Iniciar música de fondo global
+            if (window.MIAMusic) {
+                window.MIAMusic.play();
+                console.log('🎵 Música iniciada desde video-intro');
+            }
+        });
+
+        // Detectar cuando se sale de fullscreen manualmente
+        // En video-intro, solo removemos el flag, no redirigimos
+        document.addEventListener('fullscreenchange', function() {
+            if (!document.fullscreenElement) {
+                sessionStorage.removeItem('fullscreenEnabled');
+                // Quedarse en esta página (video inicial)
+            }
+        });
+        document.addEventListener('webkitfullscreenchange', function() {
+            if (!document.webkitFullscreenElement) {
+                sessionStorage.removeItem('fullscreenEnabled');
+                // Quedarse en esta página (video inicial)
+            }
+        });
+    </script>
+</body>
+</html>

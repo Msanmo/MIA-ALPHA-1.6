@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIA - Detalle del Producto</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #000;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* VIDEO DE FONDO - PROTAGONISTA */
+        .video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        #bg-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            max-width: 100vw;
+            max-height: 100vh;
+            object-fit: contain;
+            opacity: 0.65;
+        }
+
+        /* BOTÓN DE SALIDA (X) - REINICIAR TODO */
+        .exit-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 150;
+        }
+        .exit-button:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+        .exit-button::before, .exit-button::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 2px;
+            background: #fff;
+        }
+        .exit-button::before { transform: rotate(45deg); }
+        .exit-button::after { transform: rotate(-45deg); }
+
+        /* BOTÓN DE VOLVER (←) - A RESULTS */
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 50px;
+            height: 50px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 150;
+            font-size: 24px;
+            color: #fff;
+            font-weight: bold;
+        }
+        .back-button:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+
+        /* CONTENEDOR DE DETALLE - DISEÑO 2 COLUMNAS SIN SCROLL */
+        .detail-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 95%;
+            max-width: 1500px;
+            height: 88vh;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.02);
+            backdrop-filter: blur(4px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(120, 190, 32, 0.15);
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 45% 55%;
+            gap: 25px;
+            grid-template-rows: auto auto 1fr auto;
+        }
+
+        /* IMAGEN GRANDE DEL PRODUCTO */
+        .product-image-large {
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            grid-column: 1;
+            grid-row: 1 / 4;
+        }
+
+        .product-image-large img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 20px;
+        }
+
+        .product-image-placeholder {
+            font-size: 72px;
+            color: #78BE20;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        /* HEADER DE PRODUCTO (título + precio juntos) */
+        .product-header {
+            grid-column: 2;
+            grid-row: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        /* TÍTULO DEL PRODUCTO */
+        .product-title {
+            color: #fff;
+            font-size: 26px;
+            font-weight: bold;
+            line-height: 1.2;
+            text-shadow: 0 3px 10px rgba(0, 0, 0, 1);
+            text-align: left;
+        }
+
+        /* PRECIO GRANDE */
+        .product-price-large {
+            color: #78BE20;
+            font-size: 38px;
+            font-weight: bold;
+            text-shadow: 0 3px 10px rgba(0, 0, 0, 1);
+            text-align: left;
+        }
+
+        /* INFO RÁPIDA (categoría + rating) */
+        .product-quick-info {
+            grid-column: 2;
+            grid-row: 2;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        /* INFORMACIÓN DETALLADA DEL PRODUCTO */
+        .product-info {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            grid-column: 2;
+            grid-row: 3;
+            overflow-y: auto;
+            padding-right: 10px;
+            max-height: 100%;
+        }
+
+        .info-row {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .info-label {
+            color: #78BE20;
+            font-size: 14px;
+            font-weight: bold;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 1);
+            margin-bottom: 3px;
+        }
+
+        .info-value {
+            color: #fff;
+            font-size: 13px;
+            line-height: 1.4;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 1);
+        }
+
+        /* CATEGORÍA BADGE */
+        .category-badge {
+            display: inline-block;
+            background: rgba(120, 190, 32, 0.2);
+            color: #B8E986;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            border: 1px solid rgba(120, 190, 32, 0.5);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+        }
+
+        /* RATING BADGE */
+        .rating-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+        }
+
+        /* BOTÓN DE COMPRAR */
+        .buy-button {
+            padding: 16px 40px;
+            background: linear-gradient(135deg, #78BE20 0%, #A0D468 100%);
+            border: none;
+            border-radius: 30px;
+            color: #fff;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 8px 30px rgba(120, 190, 32, 0.5);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            grid-column: 1 / 3;
+            grid-row: 4;
+            justify-self: center;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .buy-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(120, 190, 32, 0.7);
+            background: linear-gradient(135deg, #A0D468 0%, #78BE20 100%);
+        }
+
+        .buy-button:active {
+            transform: translateY(0);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            .detail-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto 1fr auto;
+                height: 90vh;
+                padding: 20px;
+                gap: 15px;
+            }
+
+            .product-image-large {
+                grid-column: 1;
+                grid-row: 1;
+                height: 300px;
+            }
+
+            .product-title {
+                grid-column: 1;
+                grid-row: 2;
+                font-size: 24px;
+                text-align: center;
+            }
+
+            .product-info {
+                grid-column: 1;
+                grid-row: 3;
+            }
+
+            .buy-button {
+                grid-column: 1;
+                grid-row: 4;
+                font-size: 18px;
+                padding: 15px 30px;
+            }
+
+            .product-price-large {
+                font-size: 36px;
+                text-align: center;
+            }
+        }
+
+        /* SCROLLBAR PERSONALIZADO - SOLO PARA product-info */
+        .product-info::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .product-info::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .product-info::-webkit-scrollbar-thumb {
+            background: rgba(120, 190, 32, 0.5);
+            border-radius: 10px;
+        }
+
+        .product-info::-webkit-scrollbar-thumb:hover {
+            background: rgba(120, 190, 32, 0.8);
+        }
+
+        /* BOTÓN MUTE */
+        .mute-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(120, 190, 32, 0.9);
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .mute-button:hover {
+            background: rgba(160, 212, 104, 1);
+            transform: scale(1.1);
+        }
+
+        .mute-button svg {
+            width: 30px;
+            height: 30px;
+            fill: white;
+        }
+
+        /* SECCIÓN DE RECOMENDACIONES DE USO */
+        .use-recommendation-section {
+            background: rgba(120, 190, 32, 0.15);
+            border: 2px solid rgba(120, 190, 32, 0.4);
+            border-radius: 10px;
+            padding: 12px;
+        }
+
+        .use-recommendation-title {
+            color: #78BE20;
+            font-size: 15px;
+            font-weight: bold;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .use-recommendation-text {
+            color: #fff;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        /* SECCIÓN DE CARACTERÍSTICAS */
+        .features-section {
+            margin-top: 8px;
+        }
+
+        .features-title {
+            color: #78BE20;
+            font-size: 15px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .features-list {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px 12px;
+        }
+
+        .features-list li {
+            color: #fff;
+            font-size: 12px;
+            padding: 4px 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .features-list li:before {
+            content: '✓';
+            color: #78BE20;
+            font-weight: bold;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- MÚSICA GLOBAL -->
+    <script src="global-music.js"></script>
+
+    <!-- BOTÓN MUTE -->
+    <button class="mute-button" id="muteBtn" onclick="if(window.MIAMusic) window.MIAMusic.toggleMute()">
+        <svg id="soundIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+        </svg>
+    </button>
+
+    <!-- VIDEO DE FONDO -->
+    <div class="video-container">
+        <video id="bg-video" autoplay muted loop playsinline>
+            <source src="videos/results-bg-new.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <!-- BOTÓN DE VOLVER (←) -->
+    <div class="back-button" onclick="goBack()">←</div>
+
+    <!-- BOTÓN DE SALIDA (X) -->
+    <div class="exit-button" onclick="exitToVideo()"></div>
+
+    <!-- CONTENEDOR DE DETALLE -->
+    <div class="detail-container" id="detail-container">
+        <!-- Los detalles del producto se cargarán dinámicamente aquí -->
+    </div>
+
+    <script>
+        // Obtener idioma
+        function getLang() {
+            const params = new URLSearchParams(window.location.search);
+            const urlLang = params.get('lang');
+            if (urlLang) {
+                sessionStorage.setItem('selectedLanguage', urlLang);
+                return urlLang;
+            }
+            return sessionStorage.getItem('selectedLanguage') || 'es';
+        }
+
+        // Traducciones SIN EMOJIS
+        const translations = {
+            es: {
+                description: 'Descripcion',
+                extendedDescription: 'Descripcion ampliada',
+                category: 'Categoria',
+                reason: 'Por que lo recomendamos',
+                recommendations: 'Recomendaciones de uso',
+                buyNow: 'Comprar ahora',
+                noProduct: 'No se encontro el producto',
+                noImage: 'SIN IMAGEN',
+                id: 'ID del producto'
+            },
+            en: {
+                description: 'Description',
+                extendedDescription: 'Extended description',
+                category: 'Category',
+                reason: 'Why we recommend it',
+                recommendations: 'Usage recommendations',
+                buyNow: 'Buy now',
+                noProduct: 'Product not found',
+                noImage: 'NO IMAGE',
+                id: 'Product ID'
+            },
+            fr: {
+                description: 'Description',
+                extendedDescription: 'Description detaillee',
+                category: 'Categorie',
+                reason: 'Pourquoi nous le recommandons',
+                recommendations: 'Recommandations d\'utilisation',
+                buyNow: 'Acheter maintenant',
+                noProduct: 'Produit non trouve',
+                noImage: 'PAS D\'IMAGE',
+                id: 'ID du produit'
+            },
+            de: {
+                description: 'Beschreibung',
+                extendedDescription: 'Erweiterte Beschreibung',
+                category: 'Kategorie',
+                reason: 'Warum wir es empfehlen',
+                recommendations: 'Nutzungsempfehlungen',
+                buyNow: 'Jetzt kaufen',
+                noProduct: 'Produkt nicht gefunden',
+                noImage: 'KEIN BILD',
+                id: 'Produkt ID'
+            },
+            it: {
+                description: 'Descrizione',
+                extendedDescription: 'Descrizione estesa',
+                category: 'Categoria',
+                reason: 'Perche lo raccomandiamo',
+                recommendations: 'Raccomandazioni d\'uso',
+                buyNow: 'Acquista ora',
+                noProduct: 'Prodotto non trovato',
+                noImage: 'NESSUNA IMMAGINE',
+                id: 'ID prodotto'
+            },
+            sv: {
+                description: 'Beskrivning',
+                extendedDescription: 'Utvidgad beskrivning',
+                category: 'Kategori',
+                reason: 'Varfor vi rekommenderar det',
+                recommendations: 'Anvandningsrekommendationer',
+                buyNow: 'Kop nu',
+                noProduct: 'Produkten hittades inte',
+                noImage: 'INGEN BILD',
+                id: 'Produkt ID'
+            }
+        };
+
+        const currentLang = getLang();
+        const t = translations[currentLang] || translations.es;
+
+        // Cargar detalles del producto
+        function loadProductDetail() {
+            const container = document.getElementById('detail-container');
+            const recommendationsJSON = sessionStorage.getItem('miaRecommendations');
+            const selectedIndex = parseInt(sessionStorage.getItem('selectedProductIndex') || '0');
+
+            if (!recommendationsJSON) {
+                container.innerHTML = `<div style="color:#fff;font-size:24px;text-shadow:0 3px 10px rgba(0,0,0,1);text-align:center;">${t.noProduct}</div>`;
+                return;
+            }
+
+            try {
+                const recommendations = JSON.parse(recommendationsJSON);
+                
+                // Reordenar igual que en results.html
+                const orderedProducts = [
+                    recommendations[1] || recommendations[0],
+                    recommendations[0],
+                    recommendations[2] || recommendations[1]
+                ];
+
+                const product = orderedProducts[selectedIndex];
+
+                if (!product) {
+                    container.innerHTML = `<div style="color:#fff;font-size:24px;text-shadow:0 3px 10px rgba(0,0,0,1);text-align:center;">${t.noProduct}</div>`;
+                    return;
+                }
+
+                // 🔥 MAPEO DE LOGOS DE MARCAS (igual que results.html)
+                const brandLogos = {
+                    'MAKITA': 'https://1000logos.net/wp-content/uploads/2017/12/Makita-logo.webp',
+                    'BOSCH': 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Bosch-logo.svg/2560px-Bosch-logo.svg.webp',
+                    'STANLEY': 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Stanley_Hand_Tools_logo.svg/1200px-Stanley_Hand_Tools_logo.svg.webp',
+                    'BLACK+DECKER': 'https://logos-world.net/wp-content/uploads/2020/11/Black-Decker-Logo.webp',
+                    'DEXTER': 'https://thumbs.dreamstime.com/b/tyumen-russia-may-dexter-logo-brand-developed-adeo-group-which-owns-leroy-merlin-tools-manufactured-sold-under-name-281171439.jpg',
+                    'OSRAM': 'https://logos-world.net/wp-content/uploads/2023/03/Osram-Corporate-Logo.webp',
+                    'PHILIPS': 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Philips_logo_new.svg/2560px-Philips_logo_new.svg.webp',
+                    'LEXMAN': 'https://1000logos.net/wp-content/uploads/2023/01/Lexman-logo.webp',
+                    'INSPIRE': 'https://1000logos.net/wp-content/uploads/2023/01/Inspire-logo.webp',
+                    'LEDVANCE': 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/LEDVANCE_logo.svg/1200px-LEDVANCE_logo.svg.webp',
+                    'GROHE': 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/GROHE_logo.svg/2560px-GROHE_logo.svg.webp',
+                    'ROCA': 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Roca_logo.svg/1200px-Roca_logo.svg.webp',
+                    'JACOB DELAFON': 'https://1000logos.net/wp-content/uploads/2023/01/Jacob-Delafon-logo.webp',
+                    'COOKE&LEWIS': 'https://1000logos.net/wp-content/uploads/2023/01/Cooke-Lewis-logo.webp',
+                    'SENSEA': 'https://1000logos.net/wp-content/uploads/2023/01/Sensea-logo.webp',
+                    'DELINIA': 'https://1000logos.net/wp-content/uploads/2023/01/Delinia-logo.webp',
+                    'SIEMENS': 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Siemens-logo.svg/2560px-Siemens-logo.svg.webp',
+                    'WOLFCRAFT': 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Wolfcraft_Logo.svg/1200px-Wolfcraft_Logo.svg.webp',
+                    'FISCHER': 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Fischer_logo.svg/1200px-Fischer_logo.svg.webp',
+                    'SPIT': 'https://1000logos.net/wp-content/uploads/2023/01/Spit-logo.webp',
+                    'LUXENS': 'https://1000logos.net/wp-content/uploads/2023/01/Luxens-logo.webp',
+                    'V33': 'https://1000logos.net/wp-content/uploads/2023/01/V33-logo.webp',
+                    'TOLLENS': 'https://1000logos.net/wp-content/uploads/2023/01/Tollens-logo.webp',
+                    'HAMMERITE': 'https://1000logos.net/wp-content/uploads/2023/01/Hammerite-logo.webp',
+                    'BRUGUER': 'https://1000logos.net/wp-content/uploads/2023/01/Bruguer-logo.webp'
+                };
+                
+                // 🚨 AZURE BLOB STORAGE BLOQUEADO (Error 409) - Usar logos de marcas
+                const brandName = product.brand || 'LEROY MERLIN';
+                const brandLogoUrl = brandLogos[brandName];
+                
+                let imageHtml;
+                if (brandLogoUrl) {
+                    // Mostrar logo de marca (fallback temporal mientras se arregla Azure)
+                    imageHtml = `<img src="${brandLogoUrl}" alt="${brandName} logo" 
+                           style="max-width: 400px; max-height: 250px; object-fit: contain;"
+                           onerror="this.parentElement.innerHTML='<div class=\\'product-image-placeholder\\'>${brandName}</div>';">`;
+                } else {
+                    // Si no hay logo, mostrar nombre de marca
+                    imageHtml = `<div class="product-image-placeholder">${brandName}</div>`;
+                }
+
+                container.innerHTML = `
+                    <!-- IMAGEN (columna izquierda) -->
+                    <div class="product-image-large">
+                        ${imageHtml}
+                    </div>
+                    
+                    <!-- HEADER: TÍTULO + PRECIO (columna derecha, fila 1) -->
+                    <div class="product-header">
+                        <div class="product-title">${product.name}</div>
+                        <div class="product-price-large">${product.price ? product.price.toFixed(2) : '0.00'}€</div>
+                    </div>
+                    
+                    <!-- INFO RÁPIDA: CATEGORÍA + RATING (columna derecha, fila 2) -->
+                    <div class="product-quick-info">
+                        ${product.category ? `<div class="category-badge">${product.category}</div>` : ''}
+                        ${product.rating ? `<div class="rating-badge">⭐ ${product.rating.toFixed(1)} (${product.reviews || 0})</div>` : ''}
+                        ${product.brand ? `<div class="category-badge" style="background: rgba(255,255,255,0.1);">${product.brand}</div>` : ''}
+                    </div>
+                    
+                    <!-- INFO DETALLADA con SCROLL (columna derecha, fila 3) -->
+                    <div class="product-info">
+                        ${product.description_short || product.description ? `
+                        <div class="info-row">
+                            <div class="info-label">📖 Descripción</div>
+                            <div class="info-value">${product.description_short || product.description}</div>
+                        </div>
+                        ` : ''}
+                        
+                        ${product.description_long ? `
+                        <div class="info-row">
+                            <div class="info-label">🔍 Información Detallada</div>
+                            <div class="info-value">${product.description_long.substring(0, 300)}${product.description_long.length > 300 ? '...' : ''}</div>
+                        </div>
+                        ` : ''}
+                        
+                        ${product.use_recommendation ? `
+                        <div class="use-recommendation-section">
+                            <div class="use-recommendation-title">
+                                💡 Recomendaciones de Uso
+                            </div>
+                            <div class="use-recommendation-text">${product.use_recommendation}</div>
+                        </div>
+                        ` : ''}
+                        
+                        ${product.features && product.features.length > 0 ? `
+                        <div class="features-section">
+                            <div class="features-title">✨ Características</div>
+                            <ul class="features-list">
+                                ${product.features.slice(0, 8).map(feature => `<li>${feature}</li>`).join('')}
+                            </ul>
+                        </div>
+                        ` : ''}
+                        
+                        ${product.reason ? `
+                        <div class="info-row" style="background: rgba(120, 190, 32, 0.1); padding: 12px; border-radius: 8px; margin-top: 8px;">
+                            <div class="info-label" style="color: #78BE20;">🎯 Por qué te lo recomendamos</div>
+                            <div class="info-value">${product.reason}</div>
+                        </div>
+                        ` : ''}
+                    </div>
+                    
+                    <!-- BOTÓN DE COMPRAR (abajo, centrado, ambas columnas) -->
+                    ${product.url ? `
+                    <button class="buy-button" onclick="buyProduct('${product.url}')">${t.buyNow}</button>
+                    ` : ''}
+                `;
+
+            } catch (error) {
+                console.error('Error loading product detail:', error);
+                container.innerHTML = `<div style="color:#fff;font-size:24px;text-shadow:0 3px 10px rgba(0,0,0,1);text-align:center;">${t.noProduct}</div>`;
+            }
+        }
+
+        // Comprar producto (abre URL en nueva pestaña)
+        function buyProduct(url) {
+            if (url) {
+                window.open(url, '_blank');
+            }
+        }
+
+        // Volver a resultados
+        function goBack() {
+            window.location.href = 'results.html?lang=' + currentLang;
+        }
+
+        // Salir y reiniciar todo
+        function exitToVideo() {
+            sessionStorage.clear();
+            localStorage.clear();
+            window.location.href = 'video-intro.html';
+        }
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cargar detalles del producto
+            loadProductDetail();
+
+            // Reproducir video
+            const video = document.getElementById('bg-video');
+            video.play().catch(e => console.log('Autoplay:', e));
+        });
+    </script>
+    <!-- Inactivity timeout (45s) -->
+    <script src="inactivity-timeout.js"></script>
+</body>
+</html>

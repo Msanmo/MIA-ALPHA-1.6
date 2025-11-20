@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIA DIY Assistant - Acceso</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #000;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            overflow-y: auto;
+            position: relative;
+            padding: 100px 20px 20px 20px;
+        }
+
+        /* Animación de fondo - eliminada para fondo negro puro */
+
+        .login-container {
+            position: relative;
+            z-index: 10;
+            background: #000;
+            padding: 50px 40px;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(120, 190, 32, 0.3);
+            max-width: 550px;
+            width: 100%;
+            text-align: center;
+            border: 3px solid #fff;
+        }
+
+        .logo-section {
+            margin-bottom: 35px;
+        }
+
+        .logo-image {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            display: block;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+        }
+
+        .logo-section h1 {
+            color: #fff;
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(120, 190, 32, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .logo-section p {
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        /* Selector de idiomas */
+        .language-selector {
+            margin-bottom: 30px;
+            padding-bottom: 25px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .language-selector-title {
+            color: #fff;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .language-flags {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .flag-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 3px solid #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            background: #222;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .flag-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .flag-btn:hover {
+            transform: scale(1.15);
+            border-color: #78BE20;
+            box-shadow: 0 4px 12px rgba(120, 190, 32, 0.3);
+        }
+
+        .flag-btn.selected {
+            border: 4px solid #78BE20;
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(120, 190, 32, 0.8);
+        }
+
+        /* Formulario de login */
+        .login-form {
+            margin-top: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            color: #fff;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .password-input-wrapper {
+            position: relative;
+        }
+
+        .form-group input[type="password"],
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 15px 45px 15px 15px;
+            border: 2px solid #fff;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #000;
+            color: #fff;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #78BE20;
+            box-shadow: 0 0 0 3px rgba(120, 190, 32, 0.1);
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #fff;
+            font-size: 1.2rem;
+            user-select: none;
+        }
+
+        .toggle-password:hover {
+            color: #78BE20;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #78BE20 0%, #5a9518 100%);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(120, 190, 32, 0.3);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(120, 190, 32, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .error-message {
+            display: none;
+            background: #ff4444;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            animation: shake 0.5s;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .attempts-info {
+            margin-top: 15px;
+            color: #fff;
+            font-size: 0.9rem;
+        }
+
+        .attempts-warning {
+            color: #ff4444;
+            font-weight: bold;
+        }
+
+        /* Botón de Fullscreen - Arriba del todo */
+        .fullscreen-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 9999;
+            background: #000;
+            padding: 15px 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .fullscreen-btn {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 16px;
+            background: #000;
+            border: 2px solid #fff;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .fullscreen-btn:hover {
+            background: #222;
+            border-color: #78BE20;
+            color: #78BE20;
+            transform: scale(1.02);
+            box-shadow: 0 4px 15px rgba(120, 190, 32, 0.3);
+        }
+
+        .fullscreen-btn:active {
+            transform: scale(1);
+        }
+
+        .fullscreen-icon {
+            font-size: 1.3rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 40px 30px;
+            }
+
+            .logo-section h1 {
+                font-size: 2rem;
+            }
+
+            .logo-image {
+                width: 90px;
+                height: 90px;
+            }
+
+            .flag-btn {
+                width: 45px;
+                height: 45px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Botón de Fullscreen - Arriba del todo -->
+    <div class="fullscreen-container">
+        <button type="button" class="fullscreen-btn" id="fullscreenBtn">
+            <span class="fullscreen-icon">⛶</span>
+            <span id="fullscreenText">Pulsa aquí para ver correctamente la aplicación MIA</span>
+        </button>
+    </div>
+
+    <div class="login-container">
+        <div class="logo-section">
+            <img src="https://page.gensparksite.com/v1/base64_upload/22c2d2eed69852671098539ed6526444" alt="MIA Logo" class="logo-image">
+            <h1>MIA</h1>
+            <p>DIY Assistant</p>
+        </div>
+
+        <!-- Selector de idiomas -->
+        <div class="language-selector">
+            <div class="language-selector-title">Select Language / Selecciona Idioma</div>
+            <div class="language-flags">
+                <button type="button" class="flag-btn" data-lang="es" title="Español">
+                    <img src="https://flagcdn.com/w320/es.webp" alt="Español">
+                </button>
+                <button type="button" class="flag-btn" data-lang="en" title="English">
+                    <img src="https://flagcdn.com/w320/gb.webp" alt="English">
+                </button>
+                <button type="button" class="flag-btn" data-lang="fr" title="Français">
+                    <img src="https://flagcdn.com/w320/fr.webp" alt="Français">
+                </button>
+                <button type="button" class="flag-btn" data-lang="de" title="Deutsch">
+                    <img src="https://flagcdn.com/w320/de.webp" alt="Deutsch">
+                </button>
+                <button type="button" class="flag-btn" data-lang="it" title="Italiano">
+                    <img src="https://flagcdn.com/w320/it.webp" alt="Italiano">
+                </button>
+                <button type="button" class="flag-btn" data-lang="sv" title="Svenska">
+                    <img src="https://flagcdn.com/w320/se.webp" alt="Svenska">
+                </button>
+            </div>
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+
+        <form class="login-form" id="loginForm">
+            <div class="form-group">
+                <label for="password" id="passwordLabel">Contraseña de Acceso</label>
+                <div class="password-input-wrapper">
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        placeholder="Introduce la contraseña"
+                        autocomplete="off"
+                        required
+                    >
+                    <span class="toggle-password" id="togglePassword">Mostrar</span>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">Acceder</button>
+
+            <div class="attempts-info" id="attemptsInfo"></div>
+        </form>
+    </div>
+
+    <script>
+        // VERIFICAR SI YA ESTÁ AUTENTICADO (primera vez)
+        if (sessionStorage.getItem('isLoggedIn') === 'true') {
+            window.location.href = 'video-intro.html';
+        }
+
+        // Configuración
+        const CORRECT_PASSWORD = 'soydeITABHMY2025*';
+        const MAX_ATTEMPTS = 3;
+        const REDIRECT_URL = 'https://www.hmy-group.com';
+        const SUCCESS_URL = 'video-intro.html';
+
+        // Traducciones
+        const translations = {
+            es: {
+                passwordLabel: 'Contraseña de Acceso',
+                passwordPlaceholder: 'Introduce la contraseña',
+                submitBtn: 'Acceder',
+                errorIncorrect: '❌ Contraseña incorrecta. Te quedan',
+                errorAttempts: 'intento',
+                errorAttemptsPlural: 'intentos',
+                errorDenied: '¡Acceso denegado! Redirigiendo...',
+                successMessage: '✅ Acceso concedido. Redirigiendo...',
+                attemptsRemaining: '⚠️ Intentos restantes:',
+                waitMessage: '⏱️ Por favor, espera un momento antes de intentar de nuevo.',
+                fullscreenBtn: 'Pulsa aquí para ver correctamente la aplicación MIA'
+            },
+            en: {
+                passwordLabel: 'Access Password',
+                passwordPlaceholder: 'Enter password',
+                submitBtn: 'Access',
+                errorIncorrect: '❌ Incorrect password. You have',
+                errorAttempts: 'attempt',
+                errorAttemptsPlural: 'attempts',
+                errorDenied: 'Access denied! Redirecting...',
+                successMessage: '✅ Access granted. Redirecting...',
+                attemptsRemaining: '⚠️ Remaining attempts:',
+                waitMessage: '⏱️ Please wait a moment before trying again.',
+                fullscreenBtn: 'Click here to view the MIA application correctly'
+            },
+            fr: {
+                passwordLabel: 'Mot de passe d\'accès',
+                passwordPlaceholder: 'Entrez le mot de passe',
+                submitBtn: 'Accéder',
+                errorIncorrect: '❌ Mot de passe incorrect. Il vous reste',
+                errorAttempts: 'tentative',
+                errorAttemptsPlural: 'tentatives',
+                errorDenied: 'Accès refusé! Redirection...',
+                successMessage: '✅ Accès accordé. Redirection...',
+                attemptsRemaining: '⚠️ Tentatives restantes:',
+                waitMessage: '⏱️ Veuillez attendre un moment avant de réessayer.',
+                fullscreenBtn: 'Cliquez ici pour voir correctement l\'application MIA'
+            },
+            de: {
+                passwordLabel: 'Zugangspasswort',
+                passwordPlaceholder: 'Passwort eingeben',
+                submitBtn: 'Zugriff',
+                errorIncorrect: '❌ Falsches Passwort. Sie haben noch',
+                errorAttempts: 'Versuch',
+                errorAttemptsPlural: 'Versuche',
+                errorDenied: 'Zugang verweigert! Weiterleitung...',
+                successMessage: '✅ Zugang gewährt. Weiterleitung...',
+                attemptsRemaining: '⚠️ Verbleibende Versuche:',
+                waitMessage: '⚠️ Bitte warten Sie einen Moment, bevor Sie es erneut versuchen.',
+                fullscreenBtn: 'Klicken Sie hier, um die MIA-Anwendung korrekt anzuzeigen'
+            },
+            it: {
+                passwordLabel: 'Password di accesso',
+                passwordPlaceholder: 'Inserisci la password',
+                submitBtn: 'Accedi',
+                errorIncorrect: '❌ Password errata. Ti rimangono',
+                errorAttempts: 'tentativo',
+                errorAttemptsPlural: 'tentativi',
+                errorDenied: 'Accesso negato! Reindirizzamento...',
+                successMessage: '✅ Accesso consentito. Reindirizzamento...',
+                attemptsRemaining: '⚠️ Tentativi rimanenti:',
+                waitMessage: '⏱️ Attendere un momento prima di riprovare.',
+                fullscreenBtn: 'Clicca qui per visualizzare correttamente l\'applicazione MIA'
+            },
+            sv: {
+                passwordLabel: 'Åtkomstlösenord',
+                passwordPlaceholder: 'Ange lösenord',
+                submitBtn: 'Få tillgång',
+                errorIncorrect: '❌ Felaktigt lösenord. Du har',
+                errorAttempts: 'försök',
+                errorAttemptsPlural: 'försök',
+                errorDenied: 'Åtkomst nekad! Omdirigerar...',
+                successMessage: '✅ Åtkomst beviljad. Omdirigerar...',
+                attemptsRemaining: '⚠️ Återstående försök:',
+                waitMessage: '⏱️ Vänligen vänta ett ögonblick innan du försöker igen.',
+                fullscreenBtn: 'Klicka här för att se MIA-applikationen korrekt'
+            }
+        };
+
+        // Estado
+        let attempts = 0;
+        let currentLang = 'es';
+
+        // Elementos del DOM
+        const form = document.getElementById('loginForm');
+        const passwordInput = document.getElementById('password');
+        const passwordLabel = document.getElementById('passwordLabel');
+        const submitBtn = document.getElementById('submitBtn');
+        const togglePassword = document.getElementById('togglePassword');
+        const errorMessage = document.getElementById('errorMessage');
+        const attemptsInfo = document.getElementById('attemptsInfo');
+        const flagBtns = document.querySelectorAll('.flag-btn');
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+        const fullscreenText = document.getElementById('fullscreenText');
+
+        // Seleccionar idioma por defecto (Español)
+        document.querySelector('.flag-btn[data-lang="es"]').classList.add('selected');
+
+        // Manejar selección de idioma
+        flagBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const lang = this.getAttribute('data-lang');
+                
+                // Actualizar selección visual
+                flagBtns.forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+                
+                // Guardar idioma seleccionado
+                currentLang = lang;
+                sessionStorage.setItem('selectedLanguage', lang);
+                
+                // Actualizar textos de la interfaz
+                updateUILanguage(lang);
+            });
+        });
+
+        function updateUILanguage(lang) {
+            const t = translations[lang];
+            passwordLabel.textContent = t.passwordLabel;
+            passwordInput.placeholder = t.passwordPlaceholder;
+            submitBtn.textContent = t.submitBtn;
+            fullscreenText.textContent = t.fullscreenBtn;
+        }
+
+        // Botón de fullscreen
+        fullscreenBtn.addEventListener('click', function() {
+            const elem = document.documentElement;
+            const currentLang = sessionStorage.getItem('selectedLanguage') || 'es';
+            
+            // Guardar estado de fullscreen ANTES de activarlo
+            sessionStorage.setItem('fullscreenEnabled', 'true');
+            
+            // Activar fullscreen
+            const fullscreenPromise = elem.requestFullscreen ? elem.requestFullscreen() 
+                : elem.webkitRequestFullscreen ? elem.webkitRequestFullscreen() 
+                : elem.msRequestFullscreen ? elem.msRequestFullscreen() 
+                : Promise.resolve();
+            
+            // Esperar a que fullscreen se active, luego redirigir
+            if (fullscreenPromise && fullscreenPromise.then) {
+                fullscreenPromise.then(() => {
+                    // Delay más largo para asegurar que fullscreen se mantenga
+                    setTimeout(() => {
+                        window.location.href = 'video-intro.html?lang=' + currentLang;
+                    }, 300);
+                }).catch(() => {
+                    // Si falla fullscreen, redirigir igual después de guardar estado
+                    setTimeout(() => {
+                        window.location.href = 'video-intro.html?lang=' + currentLang;
+                    }, 300);
+                });
+            } else {
+                // Navegadores antiguos sin Promise
+                setTimeout(() => {
+                    window.location.href = 'video-intro.html?lang=' + currentLang;
+                }, 300);
+            }
+        });
+
+        // Detectar cuando se sale de fullscreen manualmente (ESC)
+        document.addEventListener('fullscreenchange', function() {
+            if (!document.fullscreenElement) {
+                sessionStorage.removeItem('fullscreenEnabled');
+            }
+        });
+        document.addEventListener('webkitfullscreenchange', function() {
+            if (!document.webkitFullscreenElement) {
+                sessionStorage.removeItem('fullscreenEnabled');
+            }
+        });
+
+        // Focus automático en el campo de contraseña
+        passwordInput.focus();
+
+        // Toggle mostrar/ocultar contraseña (SIN EMOJIS)
+        togglePassword.addEventListener('click', function() {
+            const type = passwordInput.type === 'password' ? 'text' : 'password';
+            passwordInput.type = type;
+            togglePassword.textContent = type === 'password' ? 'Mostrar' : 'Ocultar';
+        });
+
+        // Manejar envío del formulario
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const enteredPassword = passwordInput.value;
+            const t = translations[currentLang];
+
+            // Verificar contraseña
+            if (enteredPassword === CORRECT_PASSWORD) {
+                // ✅ Contraseña correcta
+                sessionStorage.setItem('isLoggedIn', 'true');
+                showSuccess();
+                setTimeout(() => {
+                    window.location.href = SUCCESS_URL;
+                }, 500);
+            } else {
+                // ❌ Contraseña incorrecta
+                attempts++;
+                
+                if (attempts >= MAX_ATTEMPTS) {
+                    // 🚫 Máximo de intentos alcanzado
+                    showError(t.errorDenied);
+                    setTimeout(() => {
+                        window.location.href = REDIRECT_URL;
+                    }, 2000);
+                } else {
+                    // Mostrar error y intentos restantes
+                    const remaining = MAX_ATTEMPTS - attempts;
+                    const attemptWord = remaining > 1 ? t.errorAttemptsPlural : t.errorAttempts;
+                    showError(`${t.errorIncorrect} ${remaining} ${attemptWord}.`);
+                    updateAttemptsInfo();
+                    passwordInput.value = '';
+                    passwordInput.focus();
+                }
+            }
+        });
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.add('show');
+            setTimeout(() => {
+                errorMessage.classList.remove('show');
+            }, 3000);
+        }
+
+        function showSuccess() {
+            const t = translations[currentLang];
+            errorMessage.style.background = '#78BE20';
+            errorMessage.textContent = t.successMessage;
+            errorMessage.classList.add('show');
+        }
+
+        function updateAttemptsInfo() {
+            const t = translations[currentLang];
+            const remaining = MAX_ATTEMPTS - attempts;
+            if (remaining > 0) {
+                attemptsInfo.innerHTML = `<span class="attempts-warning">${t.attemptsRemaining} ${remaining}/${MAX_ATTEMPTS}</span>`;
+            }
+        }
+
+        // Prevenir ataques de fuerza bruta básicos
+        let lastAttemptTime = 0;
+        form.addEventListener('submit', function() {
+            const now = Date.now();
+            const t = translations[currentLang];
+            if (now - lastAttemptTime < 1000) {
+                showError(t.waitMessage);
+                return false;
+            }
+            lastAttemptTime = now;
+        });
+    </script>
+</body>
+</html>

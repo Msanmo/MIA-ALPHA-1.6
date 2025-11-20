@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>MIA Music Player</title>
+</head>
+<body>
+    <audio id="bgMusic" loop autoplay>
+        <source src="background-music.mp3" type="audio/mpeg">
+    </audio>
+    
+    <script>
+        const audio = document.getElementById('bgMusic');
+        audio.volume = 0.3;
+        
+        // Comunicación con página padre
+        window.addEventListener('message', function(e) {
+            const { command, value } = e.data;
+            
+            switch(command) {
+                case 'play':
+                    audio.play().catch(err => console.log('Play error:', err));
+                    break;
+                case 'pause':
+                    audio.pause();
+                    break;
+                case 'setVolume':
+                    audio.volume = value;
+                    break;
+                case 'mute':
+                    audio.muted = value;
+                    break;
+                case 'getTime':
+                    e.source.postMessage({
+                        type: 'currentTime',
+                        time: audio.currentTime
+                    }, '*');
+                    break;
+            }
+        });
+        
+        // Intentar reproducir automáticamente
+        audio.play().catch(err => {
+            console.log('🎵 Esperando interacción del usuario');
+        });
+        
+        console.log('🎵 Music Player iframe listo');
+    </script>
+</body>
+</html>

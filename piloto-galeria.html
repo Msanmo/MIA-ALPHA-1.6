@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Piloto 45 Productos - MIA v3.4.4</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; padding: 20px; }
+        .header { background: white; padding: 30px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .header h1 { color: #333; margin-bottom: 10px; }
+        .header .stats { display: flex; gap: 30px; margin-top: 20px; }
+        .stat { background: #f8f9fa; padding: 15px 25px; border-radius: 8px; }
+        .stat .value { font-size: 32px; font-weight: bold; color: #0066cc; }
+        .stat .label { font-size: 14px; color: #666; margin-top: 5px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s; }
+        .card:hover { transform: translateY(-4px); box-shadow: 0 4px 16px rgba(0,0,0,0.15); }
+        .card img { width: 100%; height: 280px; object-fit: cover; background: #f8f9fa; }
+        .card-body { padding: 15px; }
+        .brand { display: inline-block; background: #0066cc; color: white; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; margin-bottom: 8px; }
+        .name { font-size: 14px; color: #333; margin-bottom: 10px; line-height: 1.4; height: 40px; overflow: hidden; }
+        .price { font-size: 24px; font-weight: bold; color: #e63946; margin-bottom: 8px; }
+        .rating { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+        .stars { color: #fbbf24; }
+        .reviews { color: #666; }
+        .sku { font-size: 11px; color: #999; margin-top: 8px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚀 Piloto: 45 Productos Reales con Imágenes IA</h1>
+        <p style="color: #666; margin-top: 10px;">Generados con <strong>imagen4 (Google)</strong> • Versión MIA v3.4.4</p>
+        <div class="stats">
+            <div class="stat">
+                <div class="value">45</div>
+                <div class="label">Productos</div>
+            </div>
+            <div class="stat">
+                <div class="value">4.53⭐</div>
+                <div class="label">Valoración media</div>
+            </div>
+            <div class="stat">
+                <div class="value">6,512</div>
+                <div class="label">Total reseñas</div>
+            </div>
+            <div class="stat">
+                <div class="value">180</div>
+                <div class="label">Créditos usados</div>
+            </div>
+        </div>
+    </div>
+    <div class="grid">
+
+        <div class="card">
+            <img src="/images/products/LM-81880755.webp" alt="Taladro percutor Bosch Professional GSB 13 RE 600W">
+            <div class="card-body">
+                <span class="brand">BOSCH</span>
+                <div class="name">Taladro percutor Bosch Professional GSB 13 RE 600W</div>
+                <div class="price">€79.99</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.5</span>
+                    <span class="reviews">(127 reviews)</span>
+                </div>
+                <div class="sku">SKU: 81880755</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-82489168.webp" alt="Taladro atornillador Makita DDF482 18V sin cable">
+            <div class="card-body">
+                <span class="brand">MAKITA</span>
+                <div class="name">Taladro atornillador Makita DDF482 18V sin cable</div>
+                <div class="price">€249.00</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.7</span>
+                    <span class="reviews">(89 reviews)</span>
+                </div>
+                <div class="sku">SKU: 82489168</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-81976529.webp" alt="Atornillador DeWalt DCD796 18V sin escobillas">
+            <div class="card-body">
+                <span class="brand">DEWALT</span>
+                <div class="name">Atornillador DeWalt DCD796 18V sin escobillas</div>
+                <div class="price">€189.00</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.6</span>
+                    <span class="reviews">(156 reviews)</span>
+                </div>
+                <div class="sku">SKU: 81976529</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-17818752.webp" alt="Taladro percutor Einhell TC-ID 650 E 650W">
+            <div class="card-body">
+                <span class="brand">EINHELL</span>
+                <div class="name">Taladro percutor Einhell TC-ID 650 E 650W</div>
+                <div class="price">€49.99</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.2</span>
+                    <span class="reviews">(234 reviews)</span>
+                </div>
+                <div class="sku">SKU: 17818752</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-16577422.webp" alt="Atornillador Milwaukee M12 FDD 12V compacto">
+            <div class="card-body">
+                <span class="brand">MILWAUKEE</span>
+                <div class="name">Atornillador Milwaukee M12 FDD 12V compacto</div>
+                <div class="price">€129.00</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.8</span>
+                    <span class="reviews">(67 reviews)</span>
+                </div>
+                <div class="sku">SKU: 16577422</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-89166416.webp" alt="Amoladora Black+Decker BEG220 900W 125mm">
+            <div class="card-body">
+                <span class="brand">BLACK+DECKER</span>
+                <div class="name">Amoladora Black+Decker BEG220 900W 125mm</div>
+                <div class="price">€39.99</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.3</span>
+                    <span class="reviews">(189 reviews)</span>
+                </div>
+                <div class="sku">SKU: 89166416</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-82950324.webp" alt="Sierra circular Stanley FATMAX FME301 1200W">
+            <div class="card-body">
+                <span class="brand">STANLEY</span>
+                <div class="name">Sierra circular Stanley FATMAX FME301 1200W</div>
+                <div class="price">€89.99</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.4</span>
+                    <span class="reviews">(112 reviews)</span>
+                </div>
+                <div class="sku">SKU: 82950324</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-15794916.webp" alt="Amoladora Bosch GWS 7-125 720W profesional">
+            <div class="card-body">
+                <span class="brand">BOSCH</span>
+                <div class="name">Amoladora Bosch GWS 7-125 720W profesional</div>
+                <div class="price">€59.99</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.6</span>
+                    <span class="reviews">(203 reviews)</span>
+                </div>
+                <div class="sku">SKU: 15794916</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-17460258.webp" alt="Sierra de calar Makita 4329K 450W con maletín">
+            <div class="card-body">
+                <span class="brand">MAKITA</span>
+                <div class="name">Sierra de calar Makita 4329K 450W con maletín</div>
+                <div class="price">€79.00</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.5</span>
+                    <span class="reviews">(98 reviews)</span>
+                </div>
+                <div class="sku">SKU: 17460258</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-17992507.webp" alt="Amoladora DeWalt DWE4257 1500W 125mm">
+            <div class="card-body">
+                <span class="brand">DEWALT</span>
+                <div class="name">Amoladora DeWalt DWE4257 1500W 125mm</div>
+                <div class="price">€119.00</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.7</span>
+                    <span class="reviews">(145 reviews)</span>
+                </div>
+                <div class="sku">SKU: 17992507</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-19001234.webp" alt="Lijadora orbital Bosch PSS 200 AC 200W">
+            <div class="card-body">
+                <span class="brand">BOSCH</span>
+                <div class="name">Lijadora orbital Bosch PSS 200 AC 200W</div>
+                <div class="price">€49.99</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.3</span>
+                    <span class="reviews">(178 reviews)</span>
+                </div>
+                <div class="sku">SKU: 19001234</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-19001235.webp" alt="Fresadora Makita RT0700C 710W compacta">
+            <div class="card-body">
+                <span class="brand">MAKITA</span>
+                <div class="name">Fresadora Makita RT0700C 710W compacta</div>
+                <div class="price">€99.00</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.6</span>
+                    <span class="reviews">(87 reviews)</span>
+                </div>
+                <div class="sku">SKU: 19001235</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-19001236.webp" alt="Lijadora excéntrica Ryobi ROS300A 300W">
+            <div class="card-body">
+                <span class="brand">RYOBI</span>
+                <div class="name">Lijadora excéntrica Ryobi ROS300A 300W</div>
+                <div class="price">€64.99</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.4</span>
+                    <span class="reviews">(134 reviews)</span>
+                </div>
+                <div class="sku">SKU: 19001236</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-19001237.webp" alt="Lijadora de banda Black+Decker KA88 720W">
+            <div class="card-body">
+                <span class="brand">BLACK+DECKER</span>
+                <div class="name">Lijadora de banda Black+Decker KA88 720W</div>
+                <div class="price">€54.99</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.2</span>
+                    <span class="reviews">(156 reviews)</span>
+                </div>
+                <div class="sku">SKU: 19001237</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-19001238.webp" alt="Fresadora DeWalt DW621 1100W profesional">
+            <div class="card-body">
+                <span class="brand">DEWALT</span>
+                <div class="name">Fresadora DeWalt DW621 1100W profesional</div>
+                <div class="price">€189.00</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.8</span>
+                    <span class="reviews">(72 reviews)</span>
+                </div>
+                <div class="sku">SKU: 19001238</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-19001239.webp" alt="Martillo perforador Bosch GBH 2-26 DRE 800W">
+            <div class="card-body">
+                <span class="brand">BOSCH</span>
+                <div class="name">Martillo perforador Bosch GBH 2-26 DRE 800W</div>
+                <div class="price">€159.00</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.7</span>
+                    <span class="reviews">(201 reviews)</span>
+                </div>
+                <div class="sku">SKU: 19001239</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-19001240.webp" alt="Martillo demoledor Makita HM1307C 1510W">
+            <div class="card-body">
+                <span class="brand">MAKITA</span>
+                <div class="name">Martillo demoledor Makita HM1307C 1510W</div>
+                <div class="price">€399.00</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.9</span>
+                    <span class="reviews">(43 reviews)</span>
+                </div>
+                <div class="sku">SKU: 19001240</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-19001241.webp" alt="Martillo perforador Einhell RT-RH 32 1250W">
+            <div class="card-body">
+                <span class="brand">EINHELL</span>
+                <div class="name">Martillo perforador Einhell RT-RH 32 1250W</div>
+                <div class="price">€89.99</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.3</span>
+                    <span class="reviews">(167 reviews)</span>
+                </div>
+                <div class="sku">SKU: 19001241</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-19001242.webp" alt="Martillo combinado Milwaukee M18 CHX 18V">
+            <div class="card-body">
+                <span class="brand">MILWAUKEE</span>
+                <div class="name">Martillo combinado Milwaukee M18 CHX 18V</div>
+                <div class="price">€349.00</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.8</span>
+                    <span class="reviews">(56 reviews)</span>
+                </div>
+                <div class="sku">SKU: 19001242</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-19001243.webp" alt="Martillo perforador DeWalt D25133K 800W SDS-plus">
+            <div class="card-body">
+                <span class="brand">DEWALT</span>
+                <div class="name">Martillo perforador DeWalt D25133K 800W SDS-plus</div>
+                <div class="price">€179.00</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.6</span>
+                    <span class="reviews">(134 reviews)</span>
+                </div>
+                <div class="sku">SKU: 19001243</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-19001244.webp" alt="Pistola de calor Bosch GHG 660 LCD 2300W">
+            <div class="card-body">
+                <span class="brand">BOSCH</span>
+                <div class="name">Pistola de calor Bosch GHG 660 LCD 2300W</div>
+                <div class="price">€119.00</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.7</span>
+                    <span class="reviews">(89 reviews)</span>
+                </div>
+                <div class="sku">SKU: 19001244</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-19001245.webp" alt="Clavadora neumática Stanley BOSTITCH F21PL">
+            <div class="card-body">
+                <span class="brand">STANLEY</span>
+                <div class="name">Clavadora neumática Stanley BOSTITCH F21PL</div>
+                <div class="price">€249.00</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.5</span>
+                    <span class="reviews">(67 reviews)</span>
+                </div>
+                <div class="sku">SKU: 19001245</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-19001246.webp" alt="Grapadora eléctrica Makita DST221Z 18V sin cable">
+            <div class="card-body">
+                <span class="brand">MAKITA</span>
+                <div class="name">Grapadora eléctrica Makita DST221Z 18V sin cable</div>
+                <div class="price">€129.00</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.4</span>
+                    <span class="reviews">(52 reviews)</span>
+                </div>
+                <div class="sku">SKU: 19001246</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-19001247.webp" alt="Pistola pintura eléctrica Wagner W550 465W">
+            <div class="card-body">
+                <span class="brand">WAGNER</span>
+                <div class="name">Pistola pintura eléctrica Wagner W550 465W</div>
+                <div class="price">€89.99</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.3</span>
+                    <span class="reviews">(178 reviews)</span>
+                </div>
+                <div class="sku">SKU: 19001247</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-19001248.webp" alt="Pistola silicona Ryobi R18GS 18V sin cable">
+            <div class="card-body">
+                <span class="brand">RYOBI</span>
+                <div class="name">Pistola silicona Ryobi R18GS 18V sin cable</div>
+                <div class="price">€79.99</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.5</span>
+                    <span class="reviews">(94 reviews)</span>
+                </div>
+                <div class="sku">SKU: 19001248</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-19001249.webp" alt="Aspirador soplador Bosch AdvancedVac 20 1200W">
+            <div class="card-body">
+                <span class="brand">BOSCH</span>
+                <div class="name">Aspirador soplador Bosch AdvancedVac 20 1200W</div>
+                <div class="price">€149.00</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.6</span>
+                    <span class="reviews">(112 reviews)</span>
+                </div>
+                <div class="sku">SKU: 19001249</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-19001250.webp" alt="Hidrolimpiadora Kärcher K4 Premium 1800W">
+            <div class="card-body">
+                <span class="brand">KARCHER</span>
+                <div class="name">Hidrolimpiadora Kärcher K4 Premium 1800W</div>
+                <div class="price">€249.00</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.7</span>
+                    <span class="reviews">(289 reviews)</span>
+                </div>
+                <div class="sku">SKU: 19001250</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-19001251.webp" alt="Aspirador taller Einhell TC-VC 1812 S 1250W">
+            <div class="card-body">
+                <span class="brand">EINHELL</span>
+                <div class="name">Aspirador taller Einhell TC-VC 1812 S 1250W</div>
+                <div class="price">€79.99</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.3</span>
+                    <span class="reviews">(201 reviews)</span>
+                </div>
+                <div class="sku">SKU: 19001251</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-19001252.webp" alt="Limpiadora vapor Kärcher SC3 EasyFix 1900W">
+            <div class="card-body">
+                <span class="brand">KARCHER</span>
+                <div class="name">Limpiadora vapor Kärcher SC3 EasyFix 1900W</div>
+                <div class="price">€199.00</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.5</span>
+                    <span class="reviews">(156 reviews)</span>
+                </div>
+                <div class="sku">SKU: 19001252</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-19001253.webp" alt="Aspirador DeWalt DCV582 18V sin cable 7.5L">
+            <div class="card-body">
+                <span class="brand">DEWALT</span>
+                <div class="name">Aspirador DeWalt DCV582 18V sin cable 7.5L</div>
+                <div class="price">€149.00</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.6</span>
+                    <span class="reviews">(87 reviews)</span>
+                </div>
+                <div class="sku">SKU: 19001253</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-19001254.webp" alt="Nivel láser Bosch Quigo Green con soporte">
+            <div class="card-body">
+                <span class="brand">BOSCH</span>
+                <div class="name">Nivel láser Bosch Quigo Green con soporte</div>
+                <div class="price">€79.99</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.5</span>
+                    <span class="reviews">(234 reviews)</span>
+                </div>
+                <div class="sku">SKU: 19001254</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-19001255.webp" alt="Medidor láser Makita LD080P distancia 80m">
+            <div class="card-body">
+                <span class="brand">MAKITA</span>
+                <div class="name">Medidor láser Makita LD080P distancia 80m</div>
+                <div class="price">€129.00</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.6</span>
+                    <span class="reviews">(178 reviews)</span>
+                </div>
+                <div class="sku">SKU: 19001255</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-19001256.webp" alt="Detector metales Stanley FMHT0-77407">
+            <div class="card-body">
+                <span class="brand">STANLEY</span>
+                <div class="name">Detector metales Stanley FMHT0-77407</div>
+                <div class="price">€39.99</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.2</span>
+                    <span class="reviews">(156 reviews)</span>
+                </div>
+                <div class="sku">SKU: 19001256</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-19001257.webp" alt="Nivel láser DeWalt DCE089D1G verde 3 líneas">
+            <div class="card-body">
+                <span class="brand">DEWALT</span>
+                <div class="name">Nivel láser DeWalt DCE089D1G verde 3 líneas</div>
+                <div class="price">€299.00</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.8</span>
+                    <span class="reviews">(92 reviews)</span>
+                </div>
+                <div class="sku">SKU: 19001257</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-19001258.webp" alt="Termómetro infrarrojo Bosch UniversalTemp">
+            <div class="card-body">
+                <span class="brand">BOSCH</span>
+                <div class="name">Termómetro infrarrojo Bosch UniversalTemp</div>
+                <div class="price">€49.99</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.4</span>
+                    <span class="reviews">(123 reviews)</span>
+                </div>
+                <div class="sku">SKU: 19001258</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-19001259.webp" alt="Multiherramienta Bosch GOP 250 CE 250W">
+            <div class="card-body">
+                <span class="brand">BOSCH</span>
+                <div class="name">Multiherramienta Bosch GOP 250 CE 250W</div>
+                <div class="price">€159.00</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.7</span>
+                    <span class="reviews">(167 reviews)</span>
+                </div>
+                <div class="sku">SKU: 19001259</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-19001260.webp" alt="Herramienta rotativa Dremel 4300-5/75">
+            <div class="card-body">
+                <span class="brand">DREMEL</span>
+                <div class="name">Herramienta rotativa Dremel 4300-5/75</div>
+                <div class="price">€119.00</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.8</span>
+                    <span class="reviews">(312 reviews)</span>
+                </div>
+                <div class="sku">SKU: 19001260</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-19001261.webp" alt="Multiherramienta Makita TM3010CX1J 320W">
+            <div class="card-body">
+                <span class="brand">MAKITA</span>
+                <div class="name">Multiherramienta Makita TM3010CX1J 320W</div>
+                <div class="price">€139.00</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.6</span>
+                    <span class="reviews">(145 reviews)</span>
+                </div>
+                <div class="sku">SKU: 19001261</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-19001262.webp" alt="Multiherramienta DeWalt DCS355N 18V sin cable">
+            <div class="card-body">
+                <span class="brand">DEWALT</span>
+                <div class="name">Multiherramienta DeWalt DCS355N 18V sin cable</div>
+                <div class="price">€119.00</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.7</span>
+                    <span class="reviews">(98 reviews)</span>
+                </div>
+                <div class="sku">SKU: 19001262</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-19001263.webp" alt="Grabadora Dremel Engraver 290-3 35W">
+            <div class="card-body">
+                <span class="brand">DREMEL</span>
+                <div class="name">Grabadora Dremel Engraver 290-3 35W</div>
+                <div class="price">€49.99</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.3</span>
+                    <span class="reviews">(234 reviews)</span>
+                </div>
+                <div class="sku">SKU: 19001263</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-19001264.webp" alt="Compresor Einhell TC-AC 190/24/8 1500W">
+            <div class="card-body">
+                <span class="brand">EINHELL</span>
+                <div class="name">Compresor Einhell TC-AC 190/24/8 1500W</div>
+                <div class="price">€129.00</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.4</span>
+                    <span class="reviews">(189 reviews)</span>
+                </div>
+                <div class="sku">SKU: 19001264</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-19001265.webp" alt="Compresor Stanley DN200/10/5 1100W">
+            <div class="card-body">
+                <span class="brand">STANLEY</span>
+                <div class="name">Compresor Stanley DN200/10/5 1100W</div>
+                <div class="price">€99.99</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.3</span>
+                    <span class="reviews">(167 reviews)</span>
+                </div>
+                <div class="sku">SKU: 19001265</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-19001266.webp" alt="Inflador digital Makita DMP180Z 18V portátil">
+            <div class="card-body">
+                <span class="brand">MAKITA</span>
+                <div class="name">Inflador digital Makita DMP180Z 18V portátil</div>
+                <div class="price">€89.00</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.6</span>
+                    <span class="reviews">(134 reviews)</span>
+                </div>
+                <div class="sku">SKU: 19001266</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-19001267.webp" alt="Compresor Michelin MX50 2HP 50L profesional">
+            <div class="card-body">
+                <span class="brand">MICHELIN</span>
+                <div class="name">Compresor Michelin MX50 2HP 50L profesional</div>
+                <div class="price">€299.00</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.7</span>
+                    <span class="reviews">(98 reviews)</span>
+                </div>
+                <div class="sku">SKU: 19001267</div>
+            </div>
+        </div>
+    
+        <div class="card">
+            <img src="/images/products/LM-19001268.webp" alt="Kit pistola aerógrafo Bosch PFS 1000 410W">
+            <div class="card-body">
+                <span class="brand">BOSCH</span>
+                <div class="name">Kit pistola aerógrafo Bosch PFS 1000 410W</div>
+                <div class="price">€89.99</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span>4.4</span>
+                    <span class="reviews">(212 reviews)</span>
+                </div>
+                <div class="sku">SKU: 19001268</div>
+            </div>
+        </div>
+    
+    </div>
+</body>
+</html>

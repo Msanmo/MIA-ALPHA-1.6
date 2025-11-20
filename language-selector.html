@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selecciona tu idioma - MIA DIY Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            text-align: center;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 50px;
+            font-size: 2.5rem;
+        }
+
+        .language-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            padding: 20px;
+            margin-bottom: 40px;
+        }
+
+        .language-button {
+            background: white;
+            border: 3px solid #ddd;
+            border-radius: 20px;
+            padding: 30px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .language-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(120, 190, 32, 0.3);
+            background: #f8fff0;
+            border-color: #78BE20;
+        }
+
+        .language-button.selected {
+            border: 4px solid #78BE20;
+            background: #f8fff0;
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(120, 190, 32, 0.4);
+        }
+
+        .language-button.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            color: #78BE20;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .flag {
+            width: 80px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .language-name {
+            font-size: 1.5rem;
+            color: #333;
+            font-weight: 600;
+        }
+
+        /* Botón continuar */
+        .continue-button {
+            display: none;
+            margin: 30px auto;
+            padding: 18px 60px;
+            background: linear-gradient(135deg, #78BE20 0%, #5a9518 100%);
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-size: 1.3rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(120, 190, 32, 0.3);
+            animation: fadeIn 0.5s ease;
+        }
+
+        .continue-button.show {
+            display: inline-block;
+        }
+
+        .continue-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(120, 190, 32, 0.5);
+        }
+
+        .continue-button:active {
+            transform: translateY(0);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Disclaimer - OCULTO POR DEFECTO */
+        .disclaimer {
+            margin-top: auto;
+            padding: 30px 20px;
+            background: #f5f5f5;
+            border-top: 3px solid #78BE20;
+            text-align: center;
+            width: 100%;
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: opacity 0.3s ease, max-height 0.3s ease, padding 0.3s ease;
+        }
+        
+        .disclaimer.show {
+            opacity: 1;
+            max-height: 200px;
+            padding: 30px 20px;
+        }
+
+        .disclaimer p {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Responsive para tablets */
+        @media (max-width: 768px) {
+            .language-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 30px;
+            }
+
+            h1 {
+                font-size: 2rem;
+                margin-bottom: 30px;
+            }
+
+            .flag {
+                width: 60px;
+                height: 45px;
+            }
+
+            .language-name {
+                font-size: 1.2rem;
+            }
+
+            .continue-button {
+                font-size: 1.1rem;
+                padding: 15px 45px;
+            }
+
+            .disclaimer p {
+                font-size: 0.85rem;
+            }
+        }
+
+        /* Responsive para móviles */
+        @media (max-width: 480px) {
+            .language-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .language-button {
+                padding: 20px 15px;
+            }
+
+            .continue-button {
+                font-size: 1rem;
+                padding: 12px 35px;
+            }
+        }
+
+        /* BOTÓN MUTE */
+        .mute-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(120, 190, 32, 0.9);
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .mute-button:hover {
+            background: rgba(160, 212, 104, 1);
+            transform: scale(1.1);
+        }
+
+        .mute-button svg {
+            width: 30px;
+            height: 30px;
+            fill: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- MÚSICA GLOBAL -->
+    <script src="global-music.js"></script>
+
+    <!-- BOTÓN MUTE -->
+    <button class="mute-button" id="muteBtn" onclick="if(window.MIAMusic) window.MIAMusic.toggleMute()">
+        <svg id="soundIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+        </svg>
+    </button>
+
+    <div class="container">
+        <h1>Selecciona tu idioma / Select your language</h1>
+        
+        <div class="language-grid">
+            <div class="language-button" data-lang="es" onclick="selectLanguage('es')">
+                <img class="flag" src="https://flagcdn.com/w320/es.webp" alt="España">
+                <div class="language-name">Español</div>
+            </div>
+
+            <div class="language-button" data-lang="en" onclick="selectLanguage('en')">
+                <img class="flag" src="https://flagcdn.com/w320/gb.webp" alt="United Kingdom">
+                <div class="language-name">English</div>
+            </div>
+
+            <div class="language-button" data-lang="fr" onclick="selectLanguage('fr')">
+                <img class="flag" src="https://flagcdn.com/w320/fr.webp" alt="France">
+                <div class="language-name">Français</div>
+            </div>
+
+            <div class="language-button" data-lang="de" onclick="selectLanguage('de')">
+                <img class="flag" src="https://flagcdn.com/w320/de.webp" alt="Deutschland">
+                <div class="language-name">Deutsch</div>
+            </div>
+
+            <div class="language-button" data-lang="it" onclick="selectLanguage('it')">
+                <img class="flag" src="https://flagcdn.com/w320/it.webp" alt="Italia">
+                <div class="language-name">Italiano</div>
+            </div>
+
+            <div class="language-button" data-lang="sv" onclick="selectLanguage('sv')">
+                <img class="flag" src="https://flagcdn.com/w320/se.webp" alt="Sverige">
+                <div class="language-name">Svenska</div>
+            </div>
+        </div>
+
+        <button class="continue-button" id="continueBtn" onclick="continueToNext()">
+            Continuar
+        </button>
+    </div>
+
+    <div class="disclaimer" id="disclaimer">
+        <p id="disclaimerText">El único propósito de MIA es el de la realización de demostraciones, no es una aplicación comercial. Todo el catálogo de productos se ha extraído de la web de Leroy Merlin y todo el código de la aplicación es propiedad de HMY.</p>
+    </div>
+
+    <script>
+        // Mantener fullscreen si estaba activado
+        if (sessionStorage.getItem('fullscreenEnabled') === 'true') {
+            const elem = document.documentElement;
+            setTimeout(() => {
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen().catch(err => console.log('Fullscreen error:', err));
+                } else if (elem.webkitRequestFullscreen) {
+                    elem.webkitRequestFullscreen();
+                } else if (elem.msRequestFullscreen) {
+                    elem.msRequestFullscreen();
+                }
+            }, 100);
+        }
+
+        // Detectar cuando se sale de fullscreen manualmente - Volver al video inicial
+        document.addEventListener('fullscreenchange', function() {
+            if (!document.fullscreenElement) {
+                sessionStorage.removeItem('fullscreenEnabled');
+                window.location.href = 'video-intro.html';
+            }
+        });
+        document.addEventListener('webkitfullscreenchange', function() {
+            if (!document.webkitFullscreenElement) {
+                sessionStorage.removeItem('fullscreenEnabled');
+                window.location.href = 'video-intro.html';
+            }
+        });
+
+        let selectedLang = null;
+
+        const translations = {
+            es: {
+                continue: 'Continuar',
+                disclaimer: 'El único propósito de MIA es el de la realización de demostraciones, no es una aplicación comercial. Todo el catálogo de productos se ha extraído de la web de Leroy Merlin y todo el código de la aplicación es propiedad de HMY.'
+            },
+            en: {
+                continue: 'Continue',
+                disclaimer: 'The sole purpose of MIA is for demonstration purposes, it is not a commercial application. The entire product catalog has been extracted from the Leroy Merlin website and all application code is the property of HMY.'
+            },
+            fr: {
+                continue: 'Continuer',
+                disclaimer: 'Le seul but de MIA est la réalisation de démonstrations, ce n\'est pas une application commerciale. Tout le catalogue de produits a été extrait du site Web de Leroy Merlin et tout le code de l\'application est la propriété de HMY.'
+            },
+            de: {
+                continue: 'Weiter',
+                disclaimer: 'Der einzige Zweck von MIA ist die Durchführung von Demonstrationen, es ist keine kommerzielle Anwendung. Der gesamte Produktkatalog wurde von der Leroy Merlin-Website extrahiert und der gesamte Anwendungscode ist Eigentum von HMY.'
+            },
+            it: {
+                continue: 'Continua',
+                disclaimer: 'L\'unico scopo di MIA è la realizzazione di dimostrazioni, non è un\'applicazione commerciale. L\'intero catalogo prodotti è stato estratto dal sito Web di Leroy Merlin e tutto il codice dell\'applicazione è di proprietà di HMY.'
+            },
+            sv: {
+                continue: 'Fortsätt',
+                disclaimer: 'Det enda syftet med MIA är att genomföra demonstrationer, det är inte en kommersiell applikation. Hela produktkatalogen har extraherats från Leroy Merlins webbplats och all applikationskod är egendom av HMY.'
+            }
+        };
+
+        function selectLanguage(lang) {
+            selectedLang = lang;
+            
+            // Remover selección anterior
+            document.querySelectorAll('.language-button').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // Marcar como seleccionado
+            const selectedButton = document.querySelector(`[data-lang="${lang}"]`);
+            selectedButton.classList.add('selected');
+            
+            // Mostrar botón continuar con texto traducido
+            const continueBtn = document.getElementById('continueBtn');
+            continueBtn.textContent = translations[lang].continue;
+            continueBtn.classList.add('show');
+            
+            // Actualizar y MOSTRAR disclaimer
+            const disclaimer = document.getElementById('disclaimer');
+            const disclaimerText = document.getElementById('disclaimerText');
+            disclaimerText.textContent = translations[lang].disclaimer;
+            disclaimer.classList.add('show');
+        }
+
+        function continueToNext() {
+            if (selectedLang) {
+                window.location.href = `selector.html?lang=${selectedLang}`;
+            }
+        }
+
+        // Permitir avanzar con Enter cuando hay idioma seleccionado
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && selectedLang) {
+                continueToNext();
+            }
+        });
+
+        // La música ya está gestionada por global-music.js
+        // Se inicia automáticamente en todas las páginas
+    </script>
+    <!-- Inactivity timeout (45s) -->
+    <script src="inactivity-timeout.js"></script>
+</body>
+</html>

@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIA - Asistente Mágico</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a1f0a 0%, #1a3a1a 50%, #0f2f0f 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Video de fondo mágico */
+        .video-background {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: 0;
+            opacity: 1;
+        }
+
+        /* Botón de salida */
+        .exit-button {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .exit-button:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: scale(1.1);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Logo Leroy Merlin */
+        .logo-container {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+
+        .logo-container img {
+            height: 60px;
+            width: auto;
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
+        }
+
+        /* Contenedor principal */
+        .main-container {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 1400px;
+            padding: 40px;
+        }
+
+        /* Área de botones principales */
+        .action-buttons {
+            display: flex;
+            gap: 80px;
+            margin-top: 50px;
+            margin-bottom: 60px;
+        }
+
+        .action-button {
+            width: 180px;
+            height: 180px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 3px solid rgba(120, 190, 32, 0.3);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(120, 190, 32, 0.3), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .action-button:hover {
+            transform: translateY(-15px) scale(1.08);
+            border-color: rgba(120, 190, 32, 0.8);
+            box-shadow: 0 20px 60px rgba(120, 190, 32, 0.4),
+                        0 0 80px rgba(120, 190, 32, 0.2);
+        }
+
+        .action-button:hover::before {
+            opacity: 1;
+        }
+
+        .action-button:active {
+            transform: translateY(-10px) scale(1.05);
+        }
+
+        .button-icon {
+            width: 80px;
+            height: 80px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .button-icon svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 4px 15px rgba(120, 190, 32, 0.6));
+        }
+
+        /* Animación de las ondas del micrófono */
+        .mic-waves circle {
+            transform-origin: center;
+        }
+
+        .mic-waves circle:nth-child(1) {
+            animation: pulse-wave 2s ease-in-out infinite;
+        }
+
+        .mic-waves circle:nth-child(2) {
+            animation: pulse-wave 2s ease-in-out infinite 0.3s;
+        }
+
+        .mic-waves circle:nth-child(3) {
+            animation: pulse-wave 2s ease-in-out infinite 0.6s;
+        }
+
+        @keyframes pulse-wave {
+            0%, 100% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+
+        .button-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: white;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Botones de categorías */
+        .category-buttons {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .category-button {
+            width: 200px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            padding: 20px;
+        }
+
+        .category-button:hover {
+            background: rgba(120, 190, 32, 0.15);
+            border-color: rgba(120, 190, 32, 0.4);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(120, 190, 32, 0.2);
+        }
+
+        .category-button:hover .category-icon {
+            animation: icon-bounce 0.6s ease-in-out;
+        }
+
+        @keyframes icon-bounce {
+            0%, 100% {
+                transform: translateY(0) scale(1);
+            }
+            50% {
+                transform: translateY(-10px) scale(1.2);
+            }
+        }
+
+        .category-icon {
+            font-size: 36px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+        }
+
+        .category-icon svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 2px 8px rgba(120, 190, 32, 0.4));
+        }
+
+        /* Animación brocha - pintar */
+        .paint-icon {
+            animation: paint-stroke 3s ease-in-out infinite;
+        }
+
+        @keyframes paint-stroke {
+            0%, 100% {
+                transform: rotate(-5deg);
+            }
+            50% {
+                transform: rotate(5deg);
+            }
+        }
+
+        /* Animación herramientas - rotar */
+        .tools-icon {
+            animation: tools-rotate 4s ease-in-out infinite;
+        }
+
+        @keyframes tools-rotate {
+            0%, 100% {
+                transform: rotate(0deg);
+            }
+            25% {
+                transform: rotate(-10deg);
+            }
+            75% {
+                transform: rotate(10deg);
+            }
+        }
+
+        /* Animación casa - pulso */
+        .home-icon {
+            animation: home-pulse 2.5s ease-in-out infinite;
+        }
+
+        @keyframes home-pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.08);
+            }
+        }
+
+        /* Animación jardín - crecer */
+        .garden-icon circle {
+            animation: garden-grow 3s ease-in-out infinite;
+        }
+
+        .garden-icon circle:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .garden-icon circle:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+
+        .garden-icon circle:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+
+        @keyframes garden-grow {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.15);
+                opacity: 0.8;
+            }
+        }
+
+        .category-text {
+            font-size: 14px;
+            font-weight: 500;
+            color: white;
+            text-align: left;
+        }
+
+        /* Teclado virtual */
+        .virtual-keyboard {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(15, 25, 15, 0.98);
+            backdrop-filter: blur(30px);
+            padding: 25px;
+            z-index: 200;
+            display: none;
+            border-top: 3px solid rgba(120, 190, 32, 0.4);
+            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .virtual-keyboard.show {
+            display: block;
+            animation: keyboard-slide-up 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes keyboard-slide-up {
+            from {
+                transform: translateY(100%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        .keyboard-row {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .keyboard-key {
+            min-width: 70px;
+            height: 65px;
+            background: rgba(255, 255, 255, 0.12);
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            border-radius: 12px;
+            color: white;
+            font-size: 22px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+            user-select: none;
+        }
+
+        .keyboard-key:active {
+            transform: scale(0.92);
+            background: rgba(120, 190, 32, 0.4);
+            border-color: rgba(120, 190, 32, 0.8);
+            box-shadow: 0 0 20px rgba(120, 190, 32, 0.4);
+        }
+
+        .keyboard-key.special {
+            min-width: 100px;
+            background: rgba(120, 190, 32, 0.25);
+            border-color: rgba(120, 190, 32, 0.4);
+        }
+
+        .keyboard-key.space {
+            min-width: 350px;
+        }
+
+        .keyboard-key.backspace,
+        .keyboard-key.enter {
+            min-width: 120px;
+            font-size: 18px;
+        }
+
+        /* Input oculto para el teclado */
+        .hidden-input {
+            position: fixed;
+            bottom: 400px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            max-width: 800px;
+            padding: 20px 30px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(120, 190, 32, 0.4);
+            border-radius: 20px;
+            color: white;
+            font-size: 24px;
+            text-align: center;
+            z-index: 201;
+            display: none;
+        }
+
+        .hidden-input.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Video de fondo mágico -->
+    <video class="video-background" autoplay loop muted playsinline>
+        <source src="https://cdn1.genspark.ai/user-upload-image/5/18e348a6-a7f8-44de-80c0-e16f8ea8bf19.mp4" type="video/mp4">
+    </video>
+
+    <!-- Botón de salida -->
+    <button class="exit-button" onclick="goBackToVideoIntro()" title="Salir">×</button>
+
+    <!-- Logo Leroy Merlin -->
+    <div class="logo-container">
+        <img src="https://page.gensparksite.com/v1/base64_upload/b47bf6a34e13c2c6d45646286c8291c9" alt="Leroy Merlin">
+    </div>
+
+    <!-- Contenedor principal -->
+    <div class="main-container">
+        <!-- Botones principales: Micro y Teclado -->
+        <div class="action-buttons">
+            <!-- Botón Hablar -->
+            <div class="action-button" onclick="selectMethod('voice')">
+                <div class="button-icon">
+                    <svg class="mic-waves" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="3" fill="#78BE20" opacity="0.8"/>
+                        <circle cx="12" cy="12" r="6" stroke="#78BE20" stroke-width="2" fill="none" opacity="0.6"/>
+                        <circle cx="12" cy="12" r="9" stroke="#78BE20" stroke-width="1.5" fill="none" opacity="0.4"/>
+                    </svg>
+                </div>
+                <div class="button-text" data-i18n="speak-with-mia">Habla con MIA</div>
+            </div>
+
+            <!-- Botón Escribir -->
+            <div class="action-button" onclick="selectMethod('text')">
+                <div class="button-icon">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="4" y="4" width="16" height="3" rx="1.5" fill="#78BE20"/>
+                        <rect x="4" y="10" width="16" height="3" rx="1.5" fill="#A0D468"/>
+                        <rect x="4" y="16" width="10" height="3" rx="1.5" fill="#B8E986"/>
+                    </svg>
+                </div>
+                <div class="button-text" data-i18n="write-to-mia">Escribe a MIA</div>
+            </div>
+        </div>
+
+        <!-- Botones de categorías -->
+        <div class="category-buttons">
+            <!-- Pintura & Decoración -->
+            <div class="category-button">
+                <div class="category-icon">
+                    <svg class="paint-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Mango de la brocha -->
+                        <rect x="18" y="8" width="3" height="20" rx="1.5" fill="#A0D468" transform="rotate(-15 18 8)"/>
+                        <!-- Cerdas de la brocha -->
+                        <path d="M15 26 L14 32 L16 32 L17 32 L18 32 L17 26 Z" fill="#78BE20"/>
+                        <!-- Gotas de pintura -->
+                        <circle cx="12" cy="35" r="1.5" fill="#BA55D3">
+                            <animate attributeName="cy" values="35;38;35" dur="2s" repeatCount="indefinite"/>
+                        </circle>
+                        <circle cx="16" cy="33" r="1" fill="#BA55D3">
+                            <animate attributeName="cy" values="33;36;33" dur="2.3s" repeatCount="indefinite"/>
+                        </circle>
+                        <!-- Ondas alrededor (efecto mágico) -->
+                        <path d="M8 28 Q 10 26 12 28" stroke="#B8E986" stroke-width="0.5" fill="none" opacity="0.6"/>
+                        <path d="M18 28 Q 20 26 22 28" stroke="#B8E986" stroke-width="0.5" fill="none" opacity="0.6"/>
+                    </svg>
+                </div>
+                <div class="category-text" data-i18n="paint">Pintura<br>& Decoración</div>
+            </div>
+            <!-- Herramientas & Bricolaje -->
+            <div class="category-button">
+                <div class="category-icon">
+                    <svg class="tools-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Llave inglesa (diagonal izquierda-derecha arriba) -->
+                        <g transform="rotate(-45 24 24)">
+                            <rect x="20" y="10" width="3" height="12" rx="1.5" fill="#78BE20"/>
+                            <path d="M18 10 L18 12 L26 12 L26 10 Z" fill="#A0D468"/>
+                            <circle cx="21.5" cy="15" r="3" fill="none" stroke="#78BE20" stroke-width="2"/>
+                        </g>
+                        <!-- Destornillador (diagonal derecha-izquierda abajo) -->
+                        <g transform="rotate(45 24 24)">
+                            <rect x="20" y="26" width="2.5" height="14" rx="1.25" fill="#A0D468"/>
+                            <rect x="19" y="38" width="4.5" height="2" fill="#78BE20"/>
+                        </g>
+                    </svg>
+                </div>
+                <div class="category-text" data-i18n="tools">Herramientas<br>& Bricolaje</div>
+            </div>
+            <!-- Hogar & Muebles (Tienda/Comercio) -->
+            <div class="category-button">
+                <div class="category-icon">
+                    <svg class="home-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Paleta de albañil (trowel) -->
+                        <path d="M14 20 L18 16 L28 20 L26 28 L16 28 Z" fill="#A0D468"/>
+                        <rect x="19" y="28" width="4" height="10" rx="2" fill="#78BE20"/>
+                        <!-- Ladrillo/pared con líneas -->
+                        <rect x="30" y="18" width="10" height="14" rx="1" fill="#B8E986"/>
+                        <line x1="30" y1="22" x2="40" y2="22" stroke="#78BE20" stroke-width="1"/>
+                        <line x1="30" y1="26" x2="40" y2="26" stroke="#78BE20" stroke-width="1"/>
+                        <line x1="30" y1="30" x2="40" y2="30" stroke="#78BE20" stroke-width="1"/>
+                        <line x1="35" y1="18" x2="35" y2="32" stroke="#78BE20" stroke-width="0.5"/>
+                    </svg>
+                </div>
+                <div class="category-text" data-i18n="home">Hogar<br>& Muebles</div>
+            </div>
+            <!-- Jardín & Exterior -->
+            <div class="category-button">
+                <div class="category-icon">
+                    <svg class="garden-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Tallos -->
+                        <line x1="16" y1="32" x2="16" y2="18" stroke="#78BE20" stroke-width="2"/>
+                        <line x1="24" y1="32" x2="24" y2="14" stroke="#78BE20" stroke-width="2"/>
+                        <line x1="32" y1="32" x2="32" y2="20" stroke="#78BE20" stroke-width="2"/>
+                        <!-- Flores/hojas (círculos) -->
+                        <circle cx="16" cy="16" r="4" fill="none" stroke="#B8E986" stroke-width="2"/>
+                        <circle cx="24" cy="12" r="5" fill="none" stroke="#A0D468" stroke-width="2"/>
+                        <circle cx="32" cy="18" r="4" fill="none" stroke="#78BE20" stroke-width="2"/>
+                        <!-- Centros de las flores -->
+                        <circle cx="16" cy="16" r="1.5" fill="#B8E986"/>
+                        <circle cx="24" cy="12" r="1.5" fill="#A0D468"/>
+                        <circle cx="32" cy="18" r="1.5" fill="#78BE20"/>
+                        <!-- Base/suelo -->
+                        <line x1="10" y1="32" x2="38" y2="32" stroke="#78BE20" stroke-width="1.5"/>
+                    </svg>
+                </div>
+                <div class="category-text" data-i18n="garden">Jardín<br>& Exterior</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Input oculto para mostrar texto -->
+    <div class="hidden-input" id="hiddenInput"></div>
+
+    <!-- Teclado virtual -->
+    <div class="virtual-keyboard" id="virtualKeyboard">
+        <div class="keyboard-row">
+            <button class="keyboard-key" onclick="addKey('1')">1</button>
+            <button class="keyboard-key" onclick="addKey('2')">2</button>
+            <button class="keyboard-key" onclick="addKey('3')">3</button>
+            <button class="keyboard-key" onclick="addKey('4')">4</button>
+            <button class="keyboard-key" onclick="addKey('5')">5</button>
+            <button class="keyboard-key" onclick="addKey('6')">6</button>
+            <button class="keyboard-key" onclick="addKey('7')">7</button>
+            <button class="keyboard-key" onclick="addKey('8')">8</button>
+            <button class="keyboard-key" onclick="addKey('9')">9</button>
+            <button class="keyboard-key" onclick="addKey('0')">0</button>
+        </div>
+        <div class="keyboard-row">
+            <button class="keyboard-key" onclick="addKey('Q')">Q</button>
+            <button class="keyboard-key" onclick="addKey('W')">W</button>
+            <button class="keyboard-key" onclick="addKey('E')">E</button>
+            <button class="keyboard-key" onclick="addKey('R')">R</button>
+            <button class="keyboard-key" onclick="addKey('T')">T</button>
+            <button class="keyboard-key" onclick="addKey('Y')">Y</button>
+            <button class="keyboard-key" onclick="addKey('U')">U</button>
+            <button class="keyboard-key" onclick="addKey('I')">I</button>
+            <button class="keyboard-key" onclick="addKey('O')">O</button>
+            <button class="keyboard-key" onclick="addKey('P')">P</button>
+        </div>
+        <div class="keyboard-row">
+            <button class="keyboard-key" onclick="addKey('A')">A</button>
+            <button class="keyboard-key" onclick="addKey('S')">S</button>
+            <button class="keyboard-key" onclick="addKey('D')">D</button>
+            <button class="keyboard-key" onclick="addKey('F')">F</button>
+            <button class="keyboard-key" onclick="addKey('G')">G</button>
+            <button class="keyboard-key" onclick="addKey('H')">H</button>
+            <button class="keyboard-key" onclick="addKey('J')">J</button>
+            <button class="keyboard-key" onclick="addKey('K')">K</button>
+            <button class="keyboard-key" onclick="addKey('L')">L</button>
+        </div>
+        <div class="keyboard-row">
+            <button class="keyboard-key" onclick="addKey('Z')">Z</button>
+            <button class="keyboard-key" onclick="addKey('X')">X</button>
+            <button class="keyboard-key" onclick="addKey('C')">C</button>
+            <button class="keyboard-key" onclick="addKey('V')">V</button>
+            <button class="keyboard-key" onclick="addKey('B')">B</button>
+            <button class="keyboard-key" onclick="addKey('N')">N</button>
+            <button class="keyboard-key" onclick="addKey('M')">M</button>
+            <button class="keyboard-key backspace special" onclick="backspace()">⌫ BORRAR</button>
+        </div>
+        <div class="keyboard-row">
+            <button class="keyboard-key space special" onclick="addKey(' ')">⎵ ESPACIO</button>
+            <button class="keyboard-key enter special" onclick="sendMessage()">⏎ ENVIAR</button>
+        </div>
+    </div>
+
+    <script>
+        // Traducciones
+        const translations = {
+            es: {
+                'speak-with-mia': 'Habla con MIA',
+                'write-to-mia': 'Escribe a MIA',
+                'paint': 'Pintura\n& Decoración',
+                'tools': 'Herramientas\n& Bricolaje',
+                'home': 'Hogar\n& Muebles',
+                'garden': 'Jardín\n& Exterior'
+            },
+            en: {
+                'speak-with-mia': 'Speak with MIA',
+                'write-to-mia': 'Write to MIA',
+                'paint': 'Paint\n& Decoration',
+                'tools': 'Tools\n& DIY',
+                'home': 'Home\n& Furniture',
+                'garden': 'Garden\n& Outdoor'
+            },
+            fr: {
+                'speak-with-mia': 'Parle avec MIA',
+                'write-to-mia': 'Écris à MIA',
+                'paint': 'Peinture\n& Décoration',
+                'tools': 'Outils\n& Bricolage',
+                'home': 'Maison\n& Meubles',
+                'garden': 'Jardin\n& Extérieur'
+            },
+            de: {
+                'speak-with-mia': 'Sprich mit MIA',
+                'write-to-mia': 'Schreibe an MIA',
+                'paint': 'Farbe\n& Dekoration',
+                'tools': 'Werkzeuge\n& DIY',
+                'home': 'Haus\n& Möbel',
+                'garden': 'Garten\n& Außen'
+            },
+            it: {
+                'speak-with-mia': 'Parla con MIA',
+                'write-to-mia': 'Scrivi a MIA',
+                'paint': 'Pittura\n& Decorazione',
+                'tools': 'Utensili\n& Fai da te',
+                'home': 'Casa\n& Mobili',
+                'garden': 'Giardino\n& Esterno'
+            },
+            sv: {
+                'speak-with-mia': 'Prata med MIA',
+                'write-to-mia': 'Skriv till MIA',
+                'paint': 'Färg\n& Dekoration',
+                'tools': 'Verktyg\n& Gör-det-själv',
+                'home': 'Hem\n& Möbler',
+                'garden': 'Trädgård\n& Utomhus'
+            }
+        };
+
+        // Obtener idioma
+        let currentLanguage = localStorage.getItem('selectedLanguage') || 'es';
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('lang')) {
+            currentLanguage = urlParams.get('lang');
+            localStorage.setItem('selectedLanguage', currentLanguage);
+        }
+
+        // Aplicar traducciones
+        function applyTranslations() {
+            const lang = translations[currentLanguage] || translations['es'];
+            document.querySelectorAll('[data-i18n]').forEach(elem => {
+                const key = elem.getAttribute('data-i18n');
+                if (lang[key]) {
+                    elem.innerHTML = lang[key].replace('\n', '<br>');
+                }
+            });
+        }
+
+        // Variable para el texto
+        let currentText = '';
+
+        // Seleccionar método
+        function selectMethod(method) {
+            console.log('🎯 Método seleccionado:', method);
+            localStorage.setItem('interactionMethod', method);
+
+            if (method === 'text') {
+                // Mostrar teclado y input
+                document.getElementById('virtualKeyboard').classList.add('show');
+                document.getElementById('hiddenInput').classList.add('show');
+            } else if (method === 'voice') {
+                // TODO: Implementar funcionalidad de voz
+                console.log('🎤 Modo voz activado');
+                alert('Funcionalidad de voz próximamente disponible');
+            }
+        }
+
+        // Funciones del teclado
+        function addKey(key) {
+            currentText += key;
+            document.getElementById('hiddenInput').textContent = currentText;
+        }
+
+        function backspace() {
+            currentText = currentText.slice(0, -1);
+            document.getElementById('hiddenInput').textContent = currentText;
+        }
+
+        function sendMessage() {
+            if (currentText.trim()) {
+                console.log('📤 Enviando mensaje:', currentText);
+                // TODO: Enviar a API
+                alert('Mensaje: ' + currentText);
+                currentText = '';
+                document.getElementById('hiddenInput').textContent = '';
+            }
+        }
+
+        // Función para volver a video-intro
+        function goBackToVideoIntro() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const lang = urlParams.get("lang") || "es";
+            window.location.href = "video-intro.html?lang=" + lang;
+        }
+
+        // Función para volver a video-intro
+        function goBackToVideoIntro() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const lang = urlParams.get('lang') || 'es';
+            window.location.href = 'video-intro.html?lang=' + lang;
+        }
+
+        // Inicializar
+        applyTranslations();
+    </script>
+</body>
+</html>
