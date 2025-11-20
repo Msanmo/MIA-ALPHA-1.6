@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>MIA DIY Assistant - Definitivo</title>
+<script src="navigation-loader.js" defer data-router-preserve="navigation-router"></script>
 <link rel="stylesheet" href="virtual-keyboard.css">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -284,7 +285,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:Arial,sans-serif;ba
 </head>
 <body>
 <!-- MÚSICA GLOBAL -->
-<script src="global-music.js"></script>
+<script src="global-music.js" data-router-preserve="global-music"></script>
 
 <!-- BOTÓN MUTE -->
 <button class="mute-button" id="muteBtn" onclick="if(window.MIAMusic) window.MIAMusic.toggleMute()">
